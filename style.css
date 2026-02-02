@@ -1,0 +1,20 @@
+.text {
+    color: blue;
+    font-size: 20px;
+}
+
+
+body {
+    background-color: black;
+}
+
+
+.img {
+    width: 50%;
+    height: 600px;
+    overflow: hidden;
+}
+
+.white {
+    color: white;
+}
