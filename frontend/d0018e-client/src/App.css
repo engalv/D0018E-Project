@@ -12,10 +12,20 @@
   transition: filter 300ms;
 }
 .logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
+  filter: drop-shadow(0 0 2em #e4dfdfaa);
 }
 .logo.react:hover {
   filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+.duct {
+  background-color: rgb(255, 0, 0);
+  border-radius: 50px;
+  margin: 50px; 
+}
+
+#orderbutton {
+  margin: 20px;
 }
 
 @keyframes logo-spin {
