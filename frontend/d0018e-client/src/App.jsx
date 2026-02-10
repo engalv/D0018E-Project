@@ -11,7 +11,7 @@ function App() {
   return (
     <>
       <div>
-        <a href="" target="_blank">
+        <a href="https://chatgpt.com" target="_blank">
           <img src={cdKungen} className="logo" alt="CDKungen logo" />
         </a>
       </div>
