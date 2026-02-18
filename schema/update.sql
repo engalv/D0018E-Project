@@ -24,12 +24,12 @@ DROP TABLE IF EXISTS `cart`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `cart` (
   `CID` int NOT NULL,
-  `UID` int DEFAULT NULL,
+  `UID` int NOT NULL,
   `PID` int DEFAULT NULL,
   `Product_Quantity` int DEFAULT NULL,
   PRIMARY KEY (`CID`),
   KEY `UID_idx` (`UID`),
-  KEY `PID_idx` (`PID`),
+  KEY `PID_CART_idx` (`PID`),
   CONSTRAINT `PID_CART` FOREIGN KEY (`PID`) REFERENCES `product` (`PID`),
   CONSTRAINT `UID_CART` FOREIGN KEY (`UID`) REFERENCES `user` (`UID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -125,14 +125,14 @@ DROP TABLE IF EXISTS `product`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `product` (
-  `PID` int NOT NULL,
+  `PID` int NOT NULL AUTO_INCREMENT,
   `Name` varchar(255) DEFAULT NULL,
   `Price` decimal(45,5) DEFAULT NULL,
   `Description` varchar(255) DEFAULT NULL,
   `Cover_Image` varchar(255) DEFAULT NULL,
   `Stock` int DEFAULT NULL,
   PRIMARY KEY (`PID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -141,6 +141,7 @@ CREATE TABLE `product` (
 
 LOCK TABLES `product` WRITE;
 /*!40000 ALTER TABLE `product` DISABLE KEYS */;
+INSERT INTO `product` VALUES (1,'Fallout: A Post Nuclear Role Playing Game',199.99000,'It is worth it','cover.jpg',1);
 /*!40000 ALTER TABLE `product` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -153,13 +154,13 @@ DROP TABLE IF EXISTS `review`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `review` (
   `RID` int NOT NULL,
-  `UID` int DEFAULT NULL,
+  `UID` int NOT NULL,
   `PID` int DEFAULT NULL,
   `Rating` int DEFAULT NULL,
   `Rating_Text` varchar(5) DEFAULT NULL,
   PRIMARY KEY (`RID`),
-  KEY `PID_idx` (`PID`),
   KEY `UID_idx` (`UID`),
+  KEY `PID_REVIEW_idx` (`PID`),
   CONSTRAINT `PID_REVIEW` FOREIGN KEY (`PID`) REFERENCES `product` (`PID`),
   CONSTRAINT `UID_REVIEW` FOREIGN KEY (`UID`) REFERENCES `user` (`UID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -182,13 +183,15 @@ DROP TABLE IF EXISTS `user`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `user` (
-  `UID` int NOT NULL,
+  `UID` int NOT NULL AUTO_INCREMENT,
   `Name` varchar(45) DEFAULT NULL,
-  `Is_Admin` int DEFAULT NULL,
+  `Is_Admin` int DEFAULT '0',
   `Email` varchar(45) DEFAULT NULL,
-  `Password` varchar(3) DEFAULT NULL,
-  PRIMARY KEY (`UID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  `Password` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`UID`),
+  UNIQUE KEY `Password_UNIQUE` (`Password`),
+  UNIQUE KEY `Email_UNIQUE` (`Email`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -197,6 +200,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
+INSERT INTO `user` VALUES (1,'swag',0,'swag@swag','$2b$10$fEeZC8VA7.DkT3HubQEqPeU.8F8z2RxilzRChMILUyCLwKpnBQ3l2');
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -209,4 +213,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-02-10 14:22:52
+-- Dump completed on 2026-02-18 14:23:42
