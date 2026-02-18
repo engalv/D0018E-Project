@@ -1,35 +1,35 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import cdKungen from '../images/CDKungen.png'
 import Products from './Products.jsx'
+import LoginForm from './LoginForm.jsx'
+import RegistrationForm from './RegistrationForm.jsx'
 import './App.css'
 
 function App() {
-  const [count, setCount] = useState(0)
 
   return (
     <>
       <div>
-        <a href="https://chatgpt.com" target="_blank">
+        <a href="swag.com" target="_blank">
           <img src={cdKungen} className="logo" alt="CDKungen logo" />
         </a>
       </div>
       <h1>CDKUNGEN.se</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-        </button>
-        <p>
-          {/* edit <code>src/App.jsx</code> and save to test HMR    */}
-        </p>
-      </div>
-          <div class="duct">
-            <Products />
-            <button id="orderbutton">Order</button>
+
+      {!user ? (
+        <div className="auth-forms">
+          <RegistrationForm />
+          <hr />
+          <LoginForm setUser={setUser} />
         </div>
-      <p className="read-the-docs">
-        CDKUNGEN.se
-      </p>
+      ) : (
+        <div className="duct">
+          <Products />
+          <button id="orderbutton">Order</button>
+        </div>
+      )}
+
+      <p className="read-the-docs">CDKUNGEN.se</p>
     </>
   )
 }
