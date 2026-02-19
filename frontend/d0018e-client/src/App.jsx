@@ -1,39 +1,24 @@
-import { useState } from 'react';
-import cdKungen from '../images/CDKungen.png';
-import Products from './Products.jsx';
-import Cart from './Cart.jsx';
-import './App.css';
-import LoginForm from './LoginForm.jsx'
-import RegistrationForm from './RegistrationForm.jsx'
+import { useState } from "react";
+import cdKungen from "../images/CDKungen.png";
+import Products from "./Products.jsx";
+import Cart from "./Cart.jsx";
+import "./App.css";
+import LoginForm from "./LoginForm.jsx";
+import RegistrationForm from "./RegistrationForm.jsx";
 
 function App() {
-  const [uid] = useState(1);
+  const [user, setUser] = useState(null);
   const [updateCart, syncCart] = useState(false);
-  const [user, setUser] = useState(null) 
 
   return (
     <>
       <div>
-        <a href="swag.com" target="_blank">
+        <a href="https://swag.com" target="_blank" rel="noopener noreferrer">
           <img src={cdKungen} className="logo" alt="CDKungen logo" />
         </a>
       </div>
 
       <h1>CDKUNGEN.se</h1>
-
-      <div className="duct">
-        <Products 
-          uid={uid} 
-          syncCart={syncCart}
-          updateCart={updateCart}
-        />
-
-        <Cart 
-          uid={uid} 
-          updateCart={updateCart} 
-          syncCart={syncCart}
-        />
-      </div>
 
       {!user ? (
         <div className="auth-forms">
@@ -43,7 +28,18 @@ function App() {
         </div>
       ) : (
         <div className="duct">
-          <Products />
+          <Products
+            uid={user.UID}
+            syncCart={syncCart}
+            updateCart={updateCart}
+          />
+
+          <Cart
+            uid={user.UID} 
+            updateCart={updateCart}
+            syncCart={syncCart}
+             />
+
           <button id="orderbutton">Order</button>
         </div>
       )}
