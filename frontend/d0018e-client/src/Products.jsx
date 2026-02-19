@@ -5,7 +5,7 @@ function Products({ uid, syncCart, updateCart }) {
   const [qty, syncQty] = useState({});
   
   useEffect(() => {
-    fetch("http://localhost:5000/products")
+    fetch("http://localhost:5000/product")
       .then(res => res.json())
       .then(data => {
         syncProducts(data);
