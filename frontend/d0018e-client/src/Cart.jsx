@@ -53,8 +53,6 @@ function Cart({ uid, updateCart, syncCart }) {
         .catch(err => console.error("checkout error:", err));
     }
 
-    const totalPrice = cartProducts.reduce((acc, p) => acc + p.Price * p.Quantity, 0);
-
     return (
         <div style={{ border: "1px solid #aaa", padding: "10px", marginTop: "20px" }}>
         <h2>Kundvagn</h2>
@@ -84,7 +82,7 @@ function Cart({ uid, updateCart, syncCart }) {
                 </div>
             ))}
 
-            <h3>Pris: £{totalPrice}</h3>
+            <h3>Pris: £{cartProducts.reduce((acc, p) => acc + p.Price * p.Quantity, 0)}</h3>
             <button onClick={checkout}>Beställ</button>
             <button
                 onClick={() => {
