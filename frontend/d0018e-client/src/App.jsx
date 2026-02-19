@@ -3,6 +3,7 @@ import cdKungen from '../images/CDKungen.png';
 import Products from './Products.jsx';
 import Cart from './Cart.jsx';
 import './App.css';
+import LoginForm from './LoginForm.jsx'
 import RegistrationForm from './RegistrationForm.jsx'
 
 function App() {
