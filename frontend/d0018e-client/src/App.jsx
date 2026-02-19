@@ -1,11 +1,13 @@
-import { useState } from 'react'
-import cdKungen from '../images/CDKungen.png'
-import Products from './Products.jsx'
-import LoginForm from './LoginForm.jsx'
+import { useState } from 'react';
+import cdKungen from '../images/CDKungen.png';
+import Products from './Products.jsx';
+import Cart from './Cart.jsx';
+import './App.css';
 import RegistrationForm from './RegistrationForm.jsx'
-import './App.css'
 
 function App() {
+  const [uid] = useState(1);
+  const [updateCart, syncCart] = useState(false);
   const [user, setUser] = useState(null) 
 
   return (
@@ -15,7 +17,22 @@ function App() {
           <img src={cdKungen} className="logo" alt="CDKungen logo" />
         </a>
       </div>
+
       <h1>CDKUNGEN.se</h1>
+
+      <div className="duct">
+        <Products 
+          uid={uid} 
+          syncCart={syncCart}
+          updateCart={updateCart}
+        />
+
+        <Cart 
+          uid={uid} 
+          updateCart={updateCart} 
+          syncCart={syncCart}
+        />
+      </div>
 
       {!user ? (
         <div className="auth-forms">
@@ -32,7 +49,7 @@ function App() {
 
       <p className="read-the-docs">CDKUNGEN.se</p>
     </>
-  )
+  );
 }
 
-export default App
+export default App;
