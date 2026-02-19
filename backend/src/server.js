@@ -7,7 +7,7 @@ const bcrypt = require("bcryptjs");
 const app = express();
 app.use(cors());
 app.use(express.json());
-app.use(bodyParser.json())
+app.use(bodyParser.json());
 
 const conn = mysql.createConnection({
   host: "localhost",
@@ -21,8 +21,24 @@ conn.connect(err => {
   console.log("MySQL Connected!");
 });
 
-// Load in Products
+// --- Helper: get or create active cart ---
+async function getActiveCartID(uid) {
+  const [rows] = await conn.promise().query(
+    "SELECT CID FROM cart WHERE UID = ? AND Status = 'active'",
+    [uid]
+  );
 
+  if (rows.length) return rows[0].CID;
+
+  const [result] = await conn.promise().query(
+    "INSERT INTO cart (UID, Status) VALUES (?, 'active')",
+    [uid]
+  );
+
+  return result.insertId; // returns the new CID
+}
+
+// --- Products ---
 app.get("/product", (req, res) => {
   conn.query("SELECT * FROM product", (err, result) => {
     if (err) {
@@ -33,122 +49,203 @@ app.get("/product", (req, res) => {
   });
 });
 
-app.get("/cart/:uid", (req, res) => {
+// --- Fetch user's cart ---
+app.get("/cart/:uid", async (req, res) => {
   const uid = req.params.uid;
-  const sql = `SELECT product.PID,
-      product.Name,
-      product.Price,
-      product.Stock,
-      cart.Product_Quantity AS Quantity
-    FROM cart
-    JOIN product ON cart.PID = product.PID
-    WHERE cart.UID = ?`;
-  conn.query(sql, [uid], (err, result) => {
-    if (err) return res.json();
-    res.json(result);
-  });
+
+  try {
+    const [cartRows] = await conn.promise().query(
+      "SELECT CID FROM cart WHERE UID = ? AND Status = 'active'",
+      [uid]
+    );
+
+    if (!cartRows.length) return res.json([]); // empty cart
+
+    const cartID = cartRows[0].CID;
+
+    const [items] = await conn.promise().query(
+      `SELECT ci.CIID, ci.PID, ci.Quantity, p.Name, p.Price, p.Stock
+       FROM cart_item ci
+       JOIN product p ON ci.PID = p.PID
+       WHERE ci.CID = ?`,
+      [cartID]
+    );
+
+    res.json(items);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to fetch cart" });
+  }
 });
 
-
+// --- Add product to cart ---
 app.post("/cart/add", async (req, res) => {
   const { uid, pid, quantity } = req.body;
 
   try {
-    const [productRows] = await conn.promise().query("SELECT Stock FROM product WHERE PID = ?", [pid]);
+    const [productRows] = await conn.promise().query(
+      "SELECT Stock FROM product WHERE PID = ?",
+      [pid]
+    );
     if (!productRows.length) return res.status(404).json({ error: "Product not found" });
 
     const stock = productRows[0].Stock;
-    if (quantity > stock) 
-      return res.json("");
+    if (quantity > stock) return res.status(400).json({ error: "Not enough stock" });
 
-    const [cartRows] = await conn.promise().query("SELECT Product_Quantity FROM cart WHERE UID = ? AND PID = ?", [uid, pid]);
+    const cartID = await getActiveCartID(uid);
 
-    if (cartRows.length) {
-      const newQuantity = cartRows[0].Product_Quantity + quantity;
-      
-      if (newQuantity > stock) 
-        return res.json("");
+    const [cartItemRows] = await conn.promise().query(
+      "SELECT Quantity FROM cart_item WHERE CID = ? AND PID = ?",
+      [cartID, pid]
+    );
 
-      await conn.promise().query("UPDATE cart SET Product_Quantity = ? WHERE UID = ? AND PID = ?", [newQuantity, uid, pid]);
-        res.json({ message: "Kundvagnen uppdaterad" });
+    if (cartItemRows.length) {
+      const newQuantity = cartItemRows[0].Quantity + quantity;
+      if (newQuantity > stock) return res.status(400).json({ error: "Not enough stock" });
+
+      await conn.promise().query(
+        "UPDATE cart_item SET Quantity = ? WHERE CID = ? AND PID = ?",
+        [newQuantity, cartID, pid]
+      );
     } else {
-      await conn.promise().query("INSERT INTO cart (UID, PID, Product_Quantity) VALUES (?, ?, ?)", [uid, pid, quantity]);
-        res.json({ message: "Produkt inlagd" });
+      await conn.promise().query(
+        "INSERT INTO cart_item (CID, PID, Quantity) VALUES (?, ?, ?)",
+        [cartID, pid, quantity]
+      );
     }
+
+    res.json({ message: "Cart updated" });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "/cart/add error" });
   }
 });
 
-
+// --- Update quantity ---
 app.post("/cart/update", async (req, res) => {
   const { uid, pid, quantity } = req.body;
 
   try {
-    const [productRows] = await conn.promise().query("SELECT Stock FROM product WHERE PID = ?", [pid]);
+    const [cartRows] = await conn.promise().query(
+      "SELECT CID FROM cart WHERE UID = ? AND Status = 'active'",
+      [uid]
+    );
+    if (!cartRows.length) return res.status(400).json({ error: "No active cart" });
 
-    if (quantity > productRows[0].Stock || quantity < 1)
-      return res.status(400).json("Lagersaldot är ogiltigt");
+    const cartID = cartRows[0].CID;
 
-    await conn.promise().query("UPDATE cart SET Product_Quantity = ? WHERE UID = ? AND PID = ?", [quantity, uid, pid]);
-      res.json({ message: "Produkt uppdaterad" });
+    const [productRows] = await conn.promise().query(
+      "SELECT Stock FROM product WHERE PID = ?",
+      [pid]
+    );
+    if (!productRows.length) return res.status(404).json({ error: "Product not found" });
 
+    if (quantity < 1 || quantity > productRows[0].Stock)
+      return res.status(400).json({ error: "Invalid quantity" });
+
+    await conn.promise().query(
+      "UPDATE cart_item SET Quantity = ? WHERE CID = ? AND PID = ?",
+      [quantity, cartID, pid]
+    );
+
+    res.json({ message: "Cart updated" });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "/cart/update error" });
   }
 });
 
-
-app.post("/cart/remove", (req, res) => {
-  try {
+// --- Remove product ---
+app.post("/cart/remove", async (req, res) => {
   const { uid, pid } = req.body;
-  conn.query("DELETE FROM cart WHERE UID = ? AND PID = ?", [uid, pid], () => {
-    res.json("Produkt borttagen");
-  });
+
+  try {
+    const [cartRows] = await conn.promise().query(
+      "SELECT CID FROM cart WHERE UID = ? AND Status = 'active'",
+      [uid]
+    );
+    if (!cartRows.length) return res.status(400).json({ error: "No active cart" });
+
+    const cartID = cartRows[0].CID;
+
+    await conn.promise().query(
+      "DELETE FROM cart_item WHERE CID = ? AND PID = ?",
+      [cartID, pid]
+    );
+
+    res.json({ message: "Product removed" });
   } catch (err) {
     console.error(err);
-    res.status(500).json("/cart/remove error");
+    res.status(500).json({ error: "/cart/remove error" });
   }
 });
 
-
+// --- Checkout ---
 app.post("/cart/checkout", async (req, res) => {
   const { uid } = req.body;
-  try {
-    const [cartItem] = await conn.promise().query(`
-      SELECT c.PID, c.Product_Quantity AS Quantity, p.Stock
-      FROM cart c
-      JOIN product p ON c.PID = p.PID
-      WHERE c.UID = ?
-    `, [uid]);
 
-    for (const product of cartItem) {
-      await conn.promise().query("UPDATE product SET Stock = Stock - ? WHERE PID = ?", [product.Quantity, product.PID]);
+  try {
+    const [cartRows] = await conn.promise().query(
+      "SELECT CID FROM cart WHERE UID = ? AND Status = 'active'",
+      [uid]
+    );
+    if (!cartRows.length) return res.status(400).json({ error: "No active cart" });
+
+    const cartID = cartRows[0].CID;
+
+    const [items] = await conn.promise().query(
+      `SELECT ci.PID, ci.Quantity, p.Stock
+       FROM cart_item ci
+       JOIN product p ON ci.PID = p.PID
+       WHERE ci.CID = ?`,
+      [cartID]
+    );
+
+    for (const item of items) {
+      await conn.promise().query(
+        "UPDATE product SET Stock = Stock - ? WHERE PID = ?",
+        [item.Quantity, item.PID]
+      );
     }
 
-    await conn.promise().query("DELETE FROM cart WHERE UID = ?", [uid]);
-      res.json("Rensade kundvagnen");
+    await conn.promise().query(
+      "UPDATE cart SET Status = 'inactive' WHERE CID = ?",
+      [cartID]
+    );
 
+    res.json({ message: "Checkout successful" });
   } catch (err) {
     console.error(err);
-    res.status(500).json("/cart/checkout error");
+    res.status(500).json({ error: "/cart/checkout error" });
   }
 });
 
-app.delete("/cart/checkout/:uid", (req, res) => {
-  try {
+// --- Clear cart without checkout ---
+app.delete("/cart/clear/:uid", async (req, res) => {
   const uid = req.params.uid;
-  conn.query("DELETE FROM cart WHERE UID = ?", [uid], err => {
-    res.json("Rensade kundvagnen");
-  });
+
+  try {
+    const [cartRows] = await conn.promise().query(
+      "SELECT CID FROM cart WHERE UID = ? AND Status = 'active'",
+      [uid]
+    );
+    if (!cartRows.length) return res.json({ message: "Cart already empty" });
+
+    const cartID = cartRows[0].CID;
+
+    await conn.promise().query(
+      "DELETE FROM cart_item WHERE CID = ?",
+      [cartID]
+    );
+
+    res.json({ message: "Cart cleared" });
   } catch (err) {
     console.error(err);
-    res.status(500).json("/cart/checkout/:uid error");
+    res.status(500).json({ error: "/cart/clear/:uid error" });
   }
 });
-  
+
+// --- Registration ---
 app.post("/register", async (req, res) => {
   const { name, email, password } = req.body;
   if (!email || !password) return res.status(400).send("Missing fields");
@@ -169,7 +266,7 @@ app.post("/register", async (req, res) => {
   }
 });
 
-// --- Login Endpoint ---
+// --- Login ---
 app.post("/login", (req, res) => {
   const { email, password } = req.body;
   if (!email || !password) return res.status(400).send("Missing fields");
@@ -183,7 +280,10 @@ app.post("/login", (req, res) => {
     const valid = await bcrypt.compare(password, user.Password);
     if (!valid) return res.status(401).send("Incorrect password");
 
-    res.send({ message: "Login successful", user: { UID: user.UID, Name: user.Name, Is_Admin: user.Is_Admin } });
+    res.send({
+      message: "Login successful",
+      user: { UID: user.UID, Name: user.Name, Is_Admin: user.Is_Admin }
+    });
   });
 });
 

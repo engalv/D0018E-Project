@@ -1,10 +1,10 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import cdKungen from "../images/CDKungen.png";
 import Products from "./Products.jsx";
 import Cart from "./Cart.jsx";
-import "./App.css";
 import LoginForm from "./LoginForm.jsx";
 import RegistrationForm from "./RegistrationForm.jsx";
+import "./App.css";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -13,7 +13,7 @@ function App() {
   return (
     <>
       <div>
-        <a href="https://swag.com" target="_blank" rel="noopener noreferrer">
+        <a href="swag.com" target="_blank">
           <img src={cdKungen} className="logo" alt="CDKungen logo" />
         </a>
       </div>
@@ -28,19 +28,9 @@ function App() {
         </div>
       ) : (
         <div className="duct">
-          <Products
-            uid={user.UID}
-            syncCart={syncCart}
-            updateCart={updateCart}
-          />
-
-          <Cart
-            uid={user.UID} 
-            updateCart={updateCart}
-            syncCart={syncCart}
-             />
-
-          <button id="orderbutton">Order</button>
+          {/* Pass syncCart to Products as well */}
+          <Products uid={user.UID} updateCart={updateCart} syncCart={syncCart} />
+          <Cart uid={user.UID} updateCart={updateCart} syncCart={syncCart} />
         </div>
       )}
 
