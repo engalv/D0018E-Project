@@ -4,6 +4,7 @@ import Products from "./Products.jsx";
 import Cart from "./Cart.jsx";
 import LoginForm from "./LoginForm.jsx";
 import RegistrationForm from "./RegistrationForm.jsx";
+import Header from './Header';
 import "./App.css";
 
 function App() {
@@ -11,14 +12,9 @@ function App() {
   const [updateCart, syncCart] = useState(false);
 
   return (
-    <>
-      <div>
-        <a href="swag.com" target="_blank">
-          <img src={cdKungen} className="logo" alt="CDKungen logo" />
-        </a>
-      </div>
+    <>    
 
-      <h1>CDKUNGEN.se</h1>
+      <Header/>{}
 
       {!user ? (
         <div className="auth-forms">
