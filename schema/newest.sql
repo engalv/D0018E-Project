@@ -23,16 +23,13 @@ DROP TABLE IF EXISTS `cart`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `cart` (
-  `CID` int NOT NULL,
+  `CID` int NOT NULL AUTO_INCREMENT,
   `UID` int NOT NULL,
-  `PID` int DEFAULT NULL,
-  `Product_Quantity` int DEFAULT NULL,
+  `Status` enum('active','inactive') DEFAULT 'active',
   PRIMARY KEY (`CID`),
   KEY `UID_idx` (`UID`),
-  KEY `PID_CART_idx` (`PID`),
-  CONSTRAINT `PID_CART` FOREIGN KEY (`PID`) REFERENCES `product` (`PID`),
   CONSTRAINT `UID_CART` FOREIGN KEY (`UID`) REFERENCES `user` (`UID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -41,7 +38,38 @@ CREATE TABLE `cart` (
 
 LOCK TABLES `cart` WRITE;
 /*!40000 ALTER TABLE `cart` DISABLE KEYS */;
+INSERT INTO `cart` VALUES (9,1,'inactive'),(11,1,'active'),(12,2,'inactive'),(13,2,'active'),(14,4,'active'),(15,5,'active');
 /*!40000 ALTER TABLE `cart` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `cart_item`
+--
+
+DROP TABLE IF EXISTS `cart_item`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `cart_item` (
+  `CIID` int NOT NULL AUTO_INCREMENT,
+  `CID` int NOT NULL,
+  `PID` int NOT NULL,
+  `Quantity` int NOT NULL,
+  PRIMARY KEY (`CIID`),
+  KEY `CI_CID_idx` (`CID`),
+  KEY `CI_PID_idx` (`PID`),
+  CONSTRAINT `CI_CID` FOREIGN KEY (`CID`) REFERENCES `cart` (`CID`),
+  CONSTRAINT `CI_PID` FOREIGN KEY (`PID`) REFERENCES `product` (`PID`)
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `cart_item`
+--
+
+LOCK TABLES `cart_item` WRITE;
+/*!40000 ALTER TABLE `cart_item` DISABLE KEYS */;
+INSERT INTO `cart_item` VALUES (7,9,1,8),(10,11,2,7),(11,12,2,6),(12,12,1,5),(14,13,1,2),(15,14,1,10),(16,15,1,5),(17,13,2,15);
+/*!40000 ALTER TABLE `cart_item` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -132,7 +160,7 @@ CREATE TABLE `product` (
   `Cover_Image` varchar(255) DEFAULT NULL,
   `Stock` int DEFAULT NULL,
   PRIMARY KEY (`PID`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -141,7 +169,7 @@ CREATE TABLE `product` (
 
 LOCK TABLES `product` WRITE;
 /*!40000 ALTER TABLE `product` DISABLE KEYS */;
-INSERT INTO `product` VALUES (1,'Fallout: A Post Nuclear Role Playing Game',199.99000,'It is worth it','cover.jpg',1);
+INSERT INTO `product` VALUES (1,'Fallout: A Post Nuclear Role Playing Game',199.99000,'It is worth it','cover.jpg',975),(2,'Cigarette CD',200.00000,'It is not worth it','cover2.jpg',494);
 /*!40000 ALTER TABLE `product` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -191,7 +219,7 @@ CREATE TABLE `user` (
   PRIMARY KEY (`UID`),
   UNIQUE KEY `Password_UNIQUE` (`Password`),
   UNIQUE KEY `Email_UNIQUE` (`Email`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -200,7 +228,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (1,'swag',0,'swag@swag','$2b$10$fEeZC8VA7.DkT3HubQEqPeU.8F8z2RxilzRChMILUyCLwKpnBQ3l2');
+INSERT INTO `user` VALUES (1,'swag',0,'swag@swag','$2b$10$fEeZC8VA7.DkT3HubQEqPeU.8F8z2RxilzRChMILUyCLwKpnBQ3l2'),(2,'Beans',0,'bing@soy','$2b$10$k.hFgXco3S8JDid8xHHCp.Z942AmiIPUcvPvy4RhMJeQB0/YmYHBq'),(3,'beans',0,'beans@swag','$2b$10$nrSFt0EEIa83ObFTjgIrLeS9j4q7UjgeedlcTsRQiAcY8qgh.Y6hu'),(4,'user1',0,'user1@user1','$2b$10$Gfo7Y8ATw85LAungNMVeP.Evf3KVWKNpXs9ExnkHtbVH6kJfOPDoK'),(5,'user2',0,'user2@user2','$2b$10$uqFgv8R2SN3v7guSANnYx.cg/XfdqbCKOJQozc0OLrIrhKnEUEbCe'),(6,'user3',0,'user3@user3','$2b$10$hUiU.hGGRw8YFQ//8Eb.O.1AHF7deFLgZXAPwgFrQoPXyWOY2UCzK');
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -213,4 +241,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-02-18 14:23:42
+-- Dump completed on 2026-02-20  7:53:49

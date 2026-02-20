@@ -7,7 +7,7 @@ const bcrypt = require("bcryptjs");
 const app = express();
 app.use(cors());
 app.use(express.json());
-app.use(bodyParser.json())
+app.use(bodyParser.json());
 
 const conn = mysql.createConnection({
   host: "localhost",
@@ -21,170 +21,250 @@ conn.connect(err => {
   console.log("MySQL Connected!");
 });
 
-// Load in Products
+// If user already has an active cart then we retrieve the UID,
+// if the UID has no cart, create a new cart for them
+async function getActiveCartID(uid) {
+  const [rows] = await conn.promise().query(
+    "SELECT CID FROM cart WHERE UID = ? AND Status = 'active'",
+    [uid]
+  );
 
+  if (rows.length) return rows[0].CID;
+
+  const [result] = await conn.promise().query(
+    "INSERT INTO cart (UID, Status) VALUES (?, 'active')",
+    [uid]
+  );
+
+  return result.insertId; // insertID is the primary key of the new cart (CID) 
+}
+
+// Display products on frobtpage
 app.get("/product", (req, res) => {
   conn.query("SELECT * FROM product", (err, result) => {
     if (err) {
       console.error("Query error:", err);
-      return res.status(500).send(err.sqlMessage || err);
     }
     res.json(result);
   });
 });
 
-app.get("/cart/:uid", (req, res) => {
+// Get cart belogning to specific user
+app.get("/cart/:uid", async (req, res) => {
   const uid = req.params.uid;
-  const sql = `SELECT product.PID,
-      product.Name,
-      product.Price,
-      product.Stock,
-      cart.Product_Quantity AS Quantity
-    FROM cart
-    JOIN product ON cart.PID = product.PID
-    WHERE cart.UID = ?`;
-  conn.query(sql, [uid], (err, result) => {
-    if (err) return res.json();
-    res.json(result);
-  });
+
+  try {
+    const [cartRows] = await conn.promise().query(
+      "SELECT CID FROM cart WHERE UID = ? AND Status = 'active'",
+      [uid]
+    );
+
+    if (!cartRows.length) return res.json([]);
+
+    const cartID = cartRows[0].CID;
+
+    const [items] = await conn.promise().query(
+      `SELECT ci.CIID, ci.PID, ci.Quantity, p.Name, p.Price, p.Stock
+       FROM cart_item ci
+       JOIN product p ON ci.PID = p.PID
+       WHERE ci.CID = ?`,
+      [cartID]
+    );
+
+    res.json(items);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Something went wrong when fetching the cart" });
+  }
 });
 
-
+// Add new product to cart
 app.post("/cart/add", async (req, res) => {
   const { uid, pid, quantity } = req.body;
 
   try {
-    const [productRows] = await conn.promise().query("SELECT Stock FROM product WHERE PID = ?", [pid]);
+    const [productRows] = await conn.promise().query(
+      "SELECT Stock FROM product WHERE PID = ?",
+      [pid]
+    );
     if (!productRows.length) return res.status(404).json({ error: "Product not found" });
 
     const stock = productRows[0].Stock;
-    if (quantity > stock) 
-      return res.json("");
+    if (quantity > stock) return res.status(400).json({ error: "Not enough stock" });
 
-    const [cartRows] = await conn.promise().query("SELECT Product_Quantity FROM cart WHERE UID = ? AND PID = ?", [uid, pid]);
+    const cartID = await getActiveCartID(uid);
 
-    if (cartRows.length) {
-      const newQuantity = cartRows[0].Product_Quantity + quantity;
-      
-      if (newQuantity > stock) 
-        return res.json("");
+    const [cartItemRows] = await conn.promise().query(
+      "SELECT Quantity FROM cart_item WHERE CID = ? AND PID = ?",
+      [cartID, pid]
+    );
 
-      await conn.promise().query("UPDATE cart SET Product_Quantity = ? WHERE UID = ? AND PID = ?", [newQuantity, uid, pid]);
-        res.json({ message: "Kundvagnen uppdaterad" });
+    if (cartItemRows.length) {
+      const newQuantity = cartItemRows[0].Quantity + quantity;
+      if (newQuantity > stock) return res.status(400).json({ error: "Not enough stock" });
+
+      await conn.promise().query(
+        "UPDATE cart_item SET Quantity = ? WHERE CID = ? AND PID = ?",
+        [newQuantity, cartID, pid]
+      );
     } else {
-      await conn.promise().query("INSERT INTO cart (UID, PID, Product_Quantity) VALUES (?, ?, ?)", [uid, pid, quantity]);
-        res.json({ message: "Produkt inlagd" });
+      await conn.promise().query(
+        "INSERT INTO cart_item (CID, PID, Quantity) VALUES (?, ?, ?)",
+        [cartID, pid, quantity]
+      );
     }
+
+    res.json({ message: "Cart updated" });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "/cart/add error" });
+    res.status(500).json({ error: "Error when adding item to cart" });
   }
 });
 
-
+// Update quantity of cart
 app.post("/cart/update", async (req, res) => {
   const { uid, pid, quantity } = req.body;
 
   try {
-    const [productRows] = await conn.promise().query("SELECT Stock FROM product WHERE PID = ?", [pid]);
+    const [cartRows] = await conn.promise().query(
+      "SELECT CID FROM cart WHERE UID = ? AND Status = 'active'",
+      [uid]
+    );
+    if (!cartRows.length) return res.status(400).json({ error: "No active cart" });
+    const cartID = cartRows[0].CID;
 
-    if (quantity > productRows[0].Stock || quantity < 1)
-      return res.status(400).json("Lagersaldot är ogiltigt");
-
-    await conn.promise().query("UPDATE cart SET Product_Quantity = ? WHERE UID = ? AND PID = ?", [quantity, uid, pid]);
-      res.json({ message: "Produkt uppdaterad" });
-
+    const [productRows] = await conn.promise().query(
+      "SELECT Stock FROM product WHERE PID = ?",
+      [pid]
+    );
+    await conn.promise().query(
+      "UPDATE cart_item SET Quantity = ? WHERE CID = ? AND PID = ?",
+      [quantity, cartID, pid]
+    );
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "/cart/update error" });
+    res.status(500).json({ error: "Cart updating error" });
   }
 });
 
-
-app.post("/cart/remove", (req, res) => {
-  try {
+// Remove product from cart
+app.post("/cart/remove", async (req, res) => {
   const { uid, pid } = req.body;
-  conn.query("DELETE FROM cart WHERE UID = ? AND PID = ?", [uid, pid], () => {
-    res.json("Produkt borttagen");
-  });
+
+  try {
+    const [cartRows] = await conn.promise().query(
+      "SELECT CID FROM cart WHERE UID = ? AND Status = 'active'",
+      [uid]
+    );
+    if (!cartRows.length) return res.status(400).json({ error: "No active cart" });
+
+    const cartID = cartRows[0].CID;
+
+    await conn.promise().query(
+      "DELETE FROM cart_item WHERE CID = ? AND PID = ?",
+      [cartID, pid]
+    );
   } catch (err) {
     console.error(err);
-    res.status(500).json("/cart/remove error");
   }
 });
 
-
+// Checkout cart
 app.post("/cart/checkout", async (req, res) => {
   const { uid } = req.body;
-  try {
-    const [cartItem] = await conn.promise().query(`
-      SELECT c.PID, c.Product_Quantity AS Quantity, p.Stock
-      FROM cart c
-      JOIN product p ON c.PID = p.PID
-      WHERE c.UID = ?
-    `, [uid]);
 
-    for (const product of cartItem) {
-      await conn.promise().query("UPDATE product SET Stock = Stock - ? WHERE PID = ?", [product.Quantity, product.PID]);
+  try {
+    const [cartRows] = await conn.promise().query(
+      "SELECT CID FROM cart WHERE UID = ? AND Status = 'active'",
+      [uid]
+    );
+    if (!cartRows.length) return res.status(400).json({ error: "No active cart" });
+
+    const cartID = cartRows[0].CID;
+
+    const [items] = await conn.promise().query(
+      `SELECT ci.PID, ci.Quantity, p.Stock
+       FROM cart_item ci
+       JOIN product p ON ci.PID = p.PID
+       WHERE ci.CID = ?`,
+      [cartID]
+    );
+
+    for (const item of items) {
+      await conn.promise().query(
+        "UPDATE product SET Stock = Stock - ? WHERE PID = ?",
+        [item.Quantity, item.PID]
+      );
     }
 
-    await conn.promise().query("DELETE FROM cart WHERE UID = ?", [uid]);
-      res.json("Rensade kundvagnen");
+    await conn.promise().query(
+      "UPDATE cart SET Status = 'inactive' WHERE CID = ?",
+      [cartID]
+    );
 
+    res.json({ message: "Checkout successful" });
   } catch (err) {
     console.error(err);
-    res.status(500).json("/cart/checkout error");
   }
 });
 
-app.delete("/cart/checkout/:uid", (req, res) => {
-  try {
+// Clear cart
+app.delete("/cart/clear/:uid", async (req, res) => {
   const uid = req.params.uid;
-  conn.query("DELETE FROM cart WHERE UID = ?", [uid], err => {
-    res.json("Rensade kundvagnen");
-  });
+
+  try {
+    const [cartRows] = await conn.promise().query(
+      "SELECT CID FROM cart WHERE UID = ? AND Status = 'active'",
+      [uid]
+    );
+    if (!cartRows.length) return res.json({ message: "Cart already empty" });
+
+    const cartID = cartRows[0].CID;
+
+    await conn.promise().query(
+      "DELETE FROM cart_item WHERE CID = ?",
+      [cartID]
+    );
+
+    res.json({ message: "Cart cleared" });
   } catch (err) {
     console.error(err);
-    res.status(500).json("/cart/checkout/:uid error");
   }
 });
-  
+
+// Registration
 app.post("/register", async (req, res) => {
   const { name, email, password } = req.body;
   if (!email || !password) return res.status(400).send("Missing fields");
 
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
+
     const sql = "INSERT INTO user (Name, Email, Password) VALUES (?, ?, ?)";
+
     conn.query(sql, [name, email, hashedPassword], (err, result) => {
       if (err) {
         console.error("Registration error:", err);
-        return res.status(500).send("Error creating user: " + err.sqlMessage);
       }
-      res.send("User registered successfully");
     });
+
   } catch (err) {
     console.error("Hashing error:", err);
-    res.status(500).send("Server error");
   }
 });
 
-// --- Login Endpoint ---
+// Logging in
 app.post("/login", (req, res) => {
   const { email, password } = req.body;
-  if (!email || !password) return res.status(400).send("Missing fields");
 
   const sql = "SELECT * FROM user WHERE Email = ?";
   conn.query(sql, [email], async (err, results) => {
-    if (err) return res.status(500).send("Database error");
-    if (results.length === 0) return res.status(401).send("User not found");
-
     const user = results[0];
     const valid = await bcrypt.compare(password, user.Password);
-    if (!valid) return res.status(401).send("Incorrect password");
-
-    res.send({ message: "Login successful", user: { UID: user.UID, Name: user.Name, Is_Admin: user.Is_Admin } });
+    res.send({
+      user: { UID: user.UID, Name: user.Name, Is_Admin: user.Is_Admin }
+    });
   });
 });
 
-app.listen(5000, () => console.log("Server running on port 5000"));
+app.listen(5000, () => console.log("Running on localhost:5000"));
