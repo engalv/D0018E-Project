@@ -18,9 +18,11 @@ function RegistrationForm() {
       console.error("Registration error:", err);
     }
   };
+   
 
   return (
     <form onSubmit={handleRegister}>
+      <h2>Register</h2>
       <input type="text" placeholder="Name" value={name} onChange={e => setName(e.target.value)} required />
       <input type="email" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} required />
       <input type="password" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} required />
