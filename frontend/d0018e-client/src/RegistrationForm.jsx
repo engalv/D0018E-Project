@@ -16,17 +16,14 @@ function RegistrationForm() {
     try {
       const res = await api.post("/register", { name, email, password });
 
-      // ✅ Extract message string
       setMessage(res.data.message || "Registration successful");
       setIsError(false);
 
-      // Optional: clear form after success
       setName("");
       setEmail("");
       setPassword("");
 
     } catch (err) {
-      // ✅ Extract error string safely
       const errorMessage =
         err.response?.data?.error || "Registration failed";
 

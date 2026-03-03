@@ -14,9 +14,7 @@ function LoginForm({ setUser }) {
 
     try {
       const res = await api.post("/login", { email, password });
-
-      // Your backend does NOT send res.data.message,
-      // it sends res.data.user
+      
       setMessage("Login successful!");
       setIsError(false);
 

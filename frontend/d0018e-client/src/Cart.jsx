@@ -77,9 +77,9 @@ async function clearCart() {
       return;
     }
 
-    console.log(data.message); // "Cart cleared" or "Cart already empty"
-    setCartProducts([]);       // clear frontend cart array
-    syncCart(prev => !prev);   // trigger re-render or refresh
+    console.log(data.message);
+    setCartProducts([]);       
+    syncCart(prev => !prev);   
   } catch (err) {
     console.error("clearCart error:", err);
   }
