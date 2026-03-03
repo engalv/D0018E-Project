@@ -67,15 +67,23 @@ function Cart({ uid, updateCart, syncCart }) {
     }
   }
 
-  async function clearCart() {
-    try {
-      await fetch(`http://localhost:5000/cart/clear/${uid}`, { method: "DELETE" });
-      setCartProducts([]);
-      syncCart(prev => !prev);
-    } catch (err) {
-      console.error("clearCart error:", err);
+async function clearCart() {
+  try {
+    const res = await fetch(`http://localhost:5000/cart/clear/${uid}`, { method: "DELETE" });
+    const data = await res.json();
+
+    if (!res.ok) {
+      console.error("Failed to clear cart:", data.error);
+      return;
     }
+
+    console.log(data.message);
+    setCartProducts([]);       
+    syncCart(prev => !prev);   
+  } catch (err) {
+    console.error("clearCart error:", err);
   }
+}
 
   return (
     <div style={{ border: "1px solid #aaa", padding: "10px", marginTop: "20px" }}>
