@@ -5,22 +5,37 @@ function LoginForm({ setUser }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
+  const [isError, setIsError] = useState(false);
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    setMessage("");
+    setIsError(false);
+
     try {
       const res = await api.post("/login", { email, password });
-      setMessage(res.data.message);
+
+      // Your backend does NOT send res.data.message,
+      // it sends res.data.user
+      setMessage("Login successful!");
+      setIsError(false);
+
       console.log("Logged in user:", res.data.user);
       setUser(res.data.user);
+
     } catch (err) {
-      setMessage(err.response?.data || "Login failed");
+      const errorMessage =
+        err.response?.data?.error || "Login failed";
+
+      setMessage(errorMessage);
+      setIsError(true);
     }
   };
 
   return (
     <div>
       <h2>Login</h2>
+
       <form onSubmit={handleLogin}>
         <input
           type="email"
@@ -29,6 +44,7 @@ function LoginForm({ setUser }) {
           onChange={e => setEmail(e.target.value)}
           required
         />
+
         <input
           type="password"
           placeholder="Password"
@@ -36,9 +52,15 @@ function LoginForm({ setUser }) {
           onChange={e => setPassword(e.target.value)}
           required
         />
+
         <button type="submit">Login</button>
       </form>
-      {message && <p>{message}</p>}
+
+      {message && (
+        <p style={{ color: isError ? "red" : "green" }}>
+          {message}
+        </p>
+      )}
     </div>
   );
 }

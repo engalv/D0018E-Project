@@ -6,28 +6,72 @@ function RegistrationForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
+  const [isError, setIsError] = useState(false);
 
   const handleRegister = async (e) => {
     e.preventDefault();
+    setMessage("");
+    setIsError(false);
 
     try {
       const res = await api.post("/register", { name, email, password });
-      setMessage(res.data);
+
+      // ✅ Extract message string
+      setMessage(res.data.message || "Registration successful");
+      setIsError(false);
+
+      // Optional: clear form after success
+      setName("");
+      setEmail("");
+      setPassword("");
+
     } catch (err) {
-      setMessage(err.response?.data || "Registration failed");
+      // ✅ Extract error string safely
+      const errorMessage =
+        err.response?.data?.error || "Registration failed";
+
+      setMessage(errorMessage);
+      setIsError(true);
+
       console.error("Registration error:", err);
     }
   };
-   
 
   return (
     <form onSubmit={handleRegister}>
       <h2>Register</h2>
-      <input type="text" placeholder="Name" value={name} onChange={e => setName(e.target.value)} required />
-      <input type="email" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} required />
-      <input type="password" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} required />
+
+      <input
+        type="text"
+        placeholder="Name"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        required
+      />
+
+      <input
+        type="email"
+        placeholder="Email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        required
+      />
+
+      <input
+        type="password"
+        placeholder="Password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        required
+      />
+
       <button type="submit">Register</button>
-      {message && <p>{message}</p>}
+
+      {message && (
+        <p style={{ color: isError ? "red" : "green" }}>
+          {message}
+        </p>
+      )}
     </form>
   );
 }

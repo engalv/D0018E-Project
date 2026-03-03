@@ -235,21 +235,38 @@ app.delete("/cart/clear/:uid", async (req, res) => {
 // Registration
 app.post("/register", async (req, res) => {
   const { name, email, password } = req.body;
-  if (!email || !password) return res.status(400).send("Missing fields");
+  
+  if (!name || !email || !password) {
+    return res.status(400).json({ error: "All fields are required" });
+  }
+
+  if (password.length < 6) {
+    return res.status(400).json({ error: "Password must be at least 6 characters" });
+  }
 
   try {
+    // Check if email already exists
+    const [existing] = await conn.promise().query(
+      "SELECT UID FROM user WHERE Email = ?",
+      [email]
+    );
+
+    if (existing.length) {
+      return res.status(400).json({ error: "Email already registered" });
+    }
+
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const sql = "INSERT INTO user (Name, Email, Password) VALUES (?, ?, ?)";
+    await conn.promise().query(
+      "INSERT INTO user (Name, Email, Password) VALUES (?, ?, ?)",
+      [name, email, hashedPassword]
+    );
 
-    conn.query(sql, [name, email, hashedPassword], (err, result) => {
-      if (err) {
-        console.error("Registration error:", err);
-      }
-    });
+    res.status(201).json({ message: "User registered successfully" });
 
   } catch (err) {
-    console.error("Hashing error:", err);
+    console.error("Registration error:", err);
+    res.status(500).json({ error: "Server error during registration" });
   }
 });
 
@@ -259,11 +276,36 @@ app.post("/login", (req, res) => {
 
   const sql = "SELECT * FROM user WHERE Email = ?";
   conn.query(sql, [email], async (err, results) => {
+    if (err) {
+      console.error("Login query error:", err);
+      return res.status(500).json({ error: "Server error" });
+    }
+
+    if (!results.length) {
+      return res.status(401).json({ error: "Invalid email or password" });
+    }
+
     const user = results[0];
-    const valid = await bcrypt.compare(password, user.Password);
-    res.send({
-      user: { UID: user.UID, Name: user.Name, Is_Admin: user.Is_Admin }
-    });
+
+    try {
+      const valid = await bcrypt.compare(password, user.Password);
+
+      if (!valid) {
+        return res.status(401).json({ error: "Invalid email or password" });
+      }
+
+      res.json({
+        user: {
+          UID: user.UID,
+          Name: user.Name,
+          Is_Admin: user.Is_Admin
+        }
+      });
+
+    } catch (err) {
+      console.error("Password compare error:", err);
+      res.status(500).json({ error: "Server error" });
+    }
   });
 });
 
