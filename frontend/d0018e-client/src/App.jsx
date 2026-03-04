@@ -1,10 +1,12 @@
 import React, { useState } from "react";
-import cdKungen from "../images/CDKungen.png";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+
+import Header from "./Header";
 import Products from "./Products.jsx";
+import ProductPage from "./ProductPage.jsx";
 import Cart from "./Cart.jsx";
 import LoginForm from "./LoginForm.jsx";
 import RegistrationForm from "./RegistrationForm.jsx";
-import Header from './Header';
 import "./App.css";
 
 function App() {
@@ -12,26 +14,55 @@ function App() {
   const [updateCart, syncCart] = useState(false);
 
   return (
-    <>    
+    <Router>
+      <Header />
 
-      <Header/>{}
+      <Routes>
+        {/* Public routes */}
+        <Route
+          path="/login"
+          element={
+            !user ? <LoginForm setUser={setUser} /> : <Navigate to="/" />
+          }
+        />
+        <Route
+          path="/register"
+          element={
+            !user ? <RegistrationForm /> : <Navigate to="/" />
+          }
+        />
 
-      {!user ? (
-        <div className="auth-forms">
-          <RegistrationForm />
-          <hr />
-          <LoginForm setUser={setUser} />
-        </div>
-      ) : (
-        <div className="duct">
-          {/* Pass syncCart to Products as well */}
-          <Products uid={user.UID} updateCart={updateCart} syncCart={syncCart} />
-          <Cart uid={user.UID} updateCart={updateCart} syncCart={syncCart} />
-        </div>
-      )}
+        {/* Protected routes */}
+        {user && (
+          <>
+            <Route
+              path="/"
+              element={
+                <div className="duct">
+                  <Products
+                    uid={user.UID}
+                    updateCart={updateCart}
+                    syncCart={syncCart}
+                  />
+                  <Cart
+                    uid={user.UID}
+                    updateCart={updateCart}
+                    syncCart={syncCart}
+                  />
+                </div>
+              }
+            />
+            <Route
+              path="/product/:pid"
+              element={<ProductPage uid={user.UID} syncCart={syncCart} />}
+            />
+          </>
+        )}
 
-      <p className="read-the-docs">CDKUNGEN.se</p>
-    </>
+        {/* Fallback route */}
+        <Route path="*" element={<Navigate to={user ? "/" : "/login"} />} />
+      </Routes>
+    </Router>
   );
 }
 

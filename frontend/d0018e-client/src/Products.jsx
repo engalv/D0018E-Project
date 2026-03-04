@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 
 function Products({ uid, syncCart, updateCart }) {
   const [products, syncProducts] = useState([]);
   const [qty, syncQty] = useState({});
-  
+
   useEffect(() => {
     fetch("http://localhost:5000/product")
       .then(res => res.json())
@@ -14,7 +15,7 @@ function Products({ uid, syncCart, updateCart }) {
       .catch(err => console.error("fetch error:", err));
   }, [updateCart]);
 
-    const buyProduct = (product) => {
+  const buyProduct = (product) => {
     const quantity = qty[product.PID] || 1;
 
     fetch("http://localhost:5000/cart/add", {
@@ -37,9 +38,13 @@ function Products({ uid, syncCart, updateCart }) {
     <div>
       <h1>Produkter</h1>
       {products.map(p => (
-        <div key={p.PID}>
-          <b>{p.Name}</b>
-          <p>{p.Description}</p>
+        <div key={p.PID} style={{ border: "1px solid #ccc", padding: "10px", margin: "10px" }}>
+
+          {/* Link to individual product page */}
+          <Link to={`/product/${p.PID}`} style={{ textDecoration: "none", color: "inherit" }}>
+            <b>{p.Name}</b>
+            <p>{p.Description}</p>
+          </Link>
           <p>£{p.Price}</p>
           <p>I lager: {p.Stock}</p>
 
