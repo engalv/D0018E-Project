@@ -14,7 +14,6 @@ function LoginForm({ setUser }) {
 
     try {
       const res = await api.post("/login", { email, password });
-
       setMessage("Login successful!");
       setIsError(false);
 
