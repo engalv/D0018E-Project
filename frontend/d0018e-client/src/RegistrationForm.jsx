@@ -67,9 +67,15 @@ function RegistrationForm() {
       {message && (
         <p style={{ color: isError ? "red" : "green" }}>
           {message}
-        </p>
-      )}
+        </p>   
+      )}      
+      <p>
+          Tillbaka till logga in? <a href="/login">Logga in</a>
+      </p>
     </form>
+
+
+    
   );
 }
 
