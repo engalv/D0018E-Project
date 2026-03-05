@@ -159,13 +159,6 @@ exports.checkoutCart = async (req, res) => {
       [orderItemsData]
     );
 
-    //for (const item of cartItems) {
-    //  await conn.promise().query(
-    //    "INSERT INTO order_items (OID, PID, Quantity, Price) VALUES (?, ?, ?, ?)",
-    //    [OID, item.PID, item.Quantity, item.Price]
-    //  );
-    //}
-
     for (const item of items) {
       await conn.promise().query(
         "UPDATE product SET Stock = Stock - ? WHERE PID = ?",
