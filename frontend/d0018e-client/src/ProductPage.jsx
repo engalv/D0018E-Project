@@ -15,7 +15,7 @@ function ProductPage({ uid, syncCart }) {
       .then(res => res.json())
       
       .then(data => {
-        setProduct(data) // get the first element since your backend returns array
+        setProduct(data) 
         console.log("Fetched product:", data)
       })
       .catch(err => console.error("Error fetching product:", err));
@@ -58,7 +58,7 @@ function ProductPage({ uid, syncCart }) {
         body: JSON.stringify({ uid, pid: product.PID, rating, comment })
       });
       await res.json();
-      // Refresh reviews after submission
+
       const updatedReviews = await fetch(`http://localhost:5000/product/${pid}/reviews`).then(r => r.json());
       setReviews(updatedReviews);
       setComment("");

@@ -7,6 +7,7 @@ import ProductPage from "./ProductPage.jsx";
 import Cart from "./Cart.jsx";
 import LoginForm from "./LoginForm.jsx";
 import RegistrationForm from "./RegistrationForm.jsx";
+import UserPage from "./UserPage.jsx"
 import "./App.css";
 
 function App() {
@@ -15,10 +16,9 @@ function App() {
 
   return (
     <Router>
-      <Header />
+      <Header user={user}/>
 
       <Routes>
-        {/* Public routes */}
         <Route
           path="/login"
           element={
@@ -56,10 +56,15 @@ function App() {
               path="/product/:pid"
               element={<ProductPage uid={user.UID} syncCart={syncCart} />}
             />
+
+            <Route
+              path="/user"
+              element={<UserPage uid={user.UID}/>}
+            />
+
           </>
         )}
 
-        {/* Fallback route */}
         <Route path="*" element={<Navigate to={user ? "/" : "/login"} />} />
       </Routes>
     </Router>

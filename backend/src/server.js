@@ -13,5 +13,6 @@ app.use(express.json());
 app.use("/", authRoutes);
 app.use("/cart", cartRoutes);
 app.use("/product", productRoutes);
+app.use("/orders", orderRoutes)
 
 app.listen(5000, () => console.log("Running on localhost:5000"));

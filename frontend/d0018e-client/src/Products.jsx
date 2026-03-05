@@ -39,8 +39,6 @@ function Products({ uid, syncCart, updateCart }) {
       <h1>Produkter</h1>
       {products.map(p => (
         <div key={p.PID} style={{ border: "1px solid #ccc", padding: "10px", margin: "10px" }}>
-
-          {/* Link to individual product page */}
           <Link to={`/product/${p.PID}`} style={{ textDecoration: "none", color: "inherit" }}>
             <b>{p.Name}</b>
             <p>{p.Description}</p>
