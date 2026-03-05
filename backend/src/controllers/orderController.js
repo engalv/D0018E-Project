@@ -1,7 +1,5 @@
 const conn = require("../database");
 
-
-// Get all orders
 exports.getAllOrders = async (req, res) => {
   try {
     const [orders] = await conn.promise().query("SELECT * FROM orders");
@@ -16,7 +14,6 @@ exports.getOrderByUser = async (req, res) => {
   const uid = req.params.uid;
 
   try {
-    // Get all orders for this user
     const [orders] = await conn
       .promise()
       .query("SELECT * FROM orders WHERE UID = ?", [uid]);
@@ -28,12 +25,10 @@ exports.getOrderByUser = async (req, res) => {
     const orderIds = orders.map(order => order.OID);
 
     if (orderIds.length > 0) {
-      // Fetch items using OID as foreign key
       const [items] = await conn
         .promise()
         .query("SELECT * FROM order_items WHERE OID IN (?)", [orderIds]);
 
-      // Attach items to each order
       orders.forEach(order => {
         order.items = items.filter(item => item.OID === order.OID);
       });

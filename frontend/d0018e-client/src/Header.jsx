@@ -2,6 +2,7 @@ import React from "react";
 import CartBox from "./CartBox";
 import "./Header.css";
 import Kungen from "../images/CDKungen.png";
+import { Link } from "react-router-dom";
 
 function Header({ toggleCart, cartCount, cartOpen, countCart, updateCart, syncCart, closeCart, user }) {
   return (
@@ -11,7 +12,13 @@ function Header({ toggleCart, cartCount, cartOpen, countCart, updateCart, syncCa
         <div className="cdk">
           <img src={Kungen} className="cd-logo" alt="cdlogo"/>
           <h1>CDKUNGEN.SE</h1>
+          
+          <nav className="navbar">
+              <Link to="/" className="nav-button">Hem</Link>
+              <Link to="/user" className="nav-button">Orderhistorik</Link>
+          </nav>
         </div>
+
 
         <div className="cart-container">
           <button className="cart-button" onClick={toggleCart}>
