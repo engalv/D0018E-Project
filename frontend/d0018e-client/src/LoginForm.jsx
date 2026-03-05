@@ -14,7 +14,6 @@ function LoginForm({ setUser }) {
 
     try {
       const res = await api.post("/login", { email, password });
-      
       setMessage("Login successful!");
       setIsError(false);
 
@@ -59,6 +58,10 @@ function LoginForm({ setUser }) {
           {message}
         </p>
       )}
+
+      <p>
+        Har du inget konto? <a href="/register">Registrera dig här</a>
+    </p>
     </div>
   );
 }

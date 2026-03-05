@@ -1,19 +1,22 @@
 import React, { useState, useEffect } from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
+
+import Header from "./Header";
 import Products from "./Products.jsx";
-import Checkout from "./Checkout.jsx";
-import Header from "./Header.jsx";
+import ProductPage from "./ProductPage.jsx";
 import CartBox from "./CartBox.jsx";
+import Checkout from "./Checkout.jsx";
 import LoginForm from "./LoginForm.jsx";
 import RegistrationForm from "./RegistrationForm.jsx";
 import CategoryBox from "./CategoryBox.jsx";
+
 import "./App.css";
 
 function App() {
   const [user, setUser] = useState(null);
   const [updateCart, syncCart] = useState(false);
-const [cartOpen, openCart] = useState(false);
-const [cartCount, countCart] = useState(0);
+  const [cartOpen, openCart] = useState(false);
+  const [cartCount, countCart] = useState(0);
 
   useEffect(() => {
     if (!user) return;
@@ -27,7 +30,7 @@ const [cartCount, countCart] = useState(0);
   }, [user, updateCart]);
 
   return (
-    <div className="container"> {}
+    <div>
       <Header
         toggleCart={() => openCart(prev => !prev)}
         cartCount={cartCount}
@@ -41,30 +44,44 @@ const [cartCount, countCart] = useState(0);
 
       <CategoryBox />
 
-      <Routes>
+      <Routes className="main-content">
+        {/* Public routes */}
         <Route
-          path="/"
-          element={
-            !user ? (
-              <div className="auth-forms">
-                <RegistrationForm />
-                <hr/>
-                <LoginForm setUser={setUser} />
-              </div>
-            ) : (
-              <>
-                <Products uid={user.UID} updateCart={updateCart} syncCart={syncCart} countCart={countCart}/>
-                {cartOpen && (
-                    <CartBox uid={user.UID} updateCart={updateCart} syncCart={syncCart} closeCart={() => openCart(false)} countCart={countCart}/>
-                )}
-              </>
-            )
-          }
+          path="/login"
+          element={!user ? <LoginForm setUser={setUser} /> : <Navigate to="/" />}
         />
         <Route
-          path="/checkout"
-          element={<Checkout uid={user?.UID} syncCart={syncCart} />}
+          path="/register"
+          element={!user ? <RegistrationForm /> : <Navigate to="/" />}
         />
+
+        {/* Protected routes */}
+        {user && (
+          <>
+            <Route
+              path="/"
+              element={
+                <div className="duct">
+                  <Products uid={user.UID} updateCart={updateCart} syncCart={syncCart} countCart={cartCount} />
+                  {cartOpen && (
+                    <CartBox uid={user.UID} updateCart={updateCart} syncCart={syncCart} closeCart={() => openCart(false)} countCart={cartCount} />
+                  )}
+                </div>
+              }
+            />
+            <Route
+              path="/checkout"
+              element={<Checkout uid={user.UID} syncCart={syncCart} />}
+            />
+            <Route
+              path="/product/:pid"
+              element={<ProductPage uid={user.UID} syncCart={syncCart} />}
+            />
+          </>
+        )}
+
+        {/* Fallback route */}
+        <Route path="*" element={<Navigate to={user ? "/" : "/login"} />} />
       </Routes>
     </div>
   );
