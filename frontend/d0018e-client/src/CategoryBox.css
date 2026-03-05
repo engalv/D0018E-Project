@@ -1,0 +1,16 @@
+.category-box {
+    width: 100%;
+    top: 68px;
+    left: 0;
+    background-color: rgb(249, 244, 244);
+    position: fixed;
+}
+
+.category-box ul {
+  list-style: none;
+  display: flex;
+  justify-content: center;
+  gap: 80px;
+  margin: 8px;
+  padding: 0;
+}
