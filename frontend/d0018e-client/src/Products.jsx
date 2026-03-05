@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
+import "./Products.css";
 import { Link } from "react-router-dom";
 
-function Products({ uid, syncCart, updateCart }) {
+function Products({ uid, syncCart, updateCart, countCart }) {
   const [products, syncProducts] = useState([]);
   const [qty, syncQty] = useState({});
 
@@ -31,31 +32,41 @@ function Products({ uid, syncCart, updateCart }) {
       .then(data => {
         console.log(data.message);
         syncCart(prev => !prev);
+        countCart(prev => prev + quantity);
       });
   };
 
   return (
-    <div>
-      <h1>Produkter</h1>
-      {products.map(p => (
-        <div key={p.PID} style={{ border: "1px solid #ccc", padding: "10px", margin: "10px" }}>
+    <div className="products-container">
+      <div className="textfont">
+        Produkter
+      </div>
 
-          {/* Link to individual product page */}
-          <Link to={`/product/${p.PID}`} style={{ textDecoration: "none", color: "inherit" }}>
-            <b>{p.Name}</b>
-            <p>{p.Description}</p>
-          </Link>
-          <p>£{p.Price}</p>
-          <p>I lager: {p.Stock}</p>
+      <div className="products-list">
+        {products.map(p => (
+          <div key={p.PID} className="product-row">
+            <Link to={`/product/${p.PID}`} style={{ textDecoration: "none", color: "inherit" }}>
+              <img src={p.Cover_Image} alt={p.Name} className="product-image" />
+              <div className="product-name">{p.Name}</div>
+              <div className="product-description">{p.Description}</div>
+            </Link>
 
-          <button
-            onClick={() => buyProduct(p)}
-            disabled={p.Stock <= 0}
-          >
-            {p.Stock > 0 ? "Lägg i kundvagn" : "Slut i lagret"}
-          </button>
-        </div>
-      ))}
+            <div className="product-stock">
+              {p.Stock > 0 ? `${p.Stock}` : "Slut i lager"}
+            </div>
+
+            <div className="product-price">£{p.Price}</div>
+
+            <button
+              className="buy-btn"
+              onClick={() => buyProduct(p)}
+              disabled={p.Stock <= 0}
+            >
+              {p.Stock > 0 ? "Lägg i kundvagn" : "Slut i lagret"}
+            </button>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

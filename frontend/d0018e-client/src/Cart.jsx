@@ -1,22 +1,26 @@
 import { useEffect, useState } from "react";
 
-function Cart({ uid, updateCart, syncCart }) {
+function Cart({ uid, updateCart, syncCart, countCart }) {
   const [cartProducts, setCartProducts] = useState([]);
 
   useEffect(() => {
     fetchCart();
   }, [uid, updateCart]);
 
-  async function fetchCart() {
-    try {
-      const res = await fetch(`http://localhost:5000/cart/${uid}`);
-      const data = await res.json();
-      setCartProducts(Array.isArray(data) ? data : []);
-    } catch (err) {
-      console.error("fetchCart error:", err);
-      setCartProducts([]);
+    async function fetchCart() {
+      try {
+        const res = await fetch(`http://localhost:5000/cart/${uid}`);
+        const data = await res.json();
+        setCartProducts(Array.isArray(data) ? data : []);
+
+        countCart && countCart(data.reduce((acc, p) => acc + p.Quantity, 0));
+
+      } catch (err) {
+        console.error("fetchCart error:", err);
+        setCartProducts([]);
+        countCart && countCart(0);
+      }
     }
-  }
 
   async function updateQuantity(pid, newQuantity) {
     const product = cartProducts.find(p => p.PID === pid);
@@ -88,7 +92,6 @@ async function clearCart() {
   return (
     <div style={{ border: "1px solid #aaa", padding: "10px", marginTop: "20px" }}>
       <h2>Kundvagn</h2>
-
       {Array.isArray(cartProducts) && cartProducts.length > 0 ? (
         <>
           {cartProducts.map((product, idx) => (
@@ -101,9 +104,8 @@ async function clearCart() {
                 value={product.Quantity}
                 onChange={e => updateQuantity(product.PID, Number(e.target.value))}
               />
-              <p>Summa: £{(product.Price * product.Quantity).toFixed(2)}</p>
+              <p>Summa: £{(product.Price * product.Quantity).toFixed(2)}</p>           
               <button onClick={() => removeProduct(product.PID)}>-</button>
-              <hr />
             </div>
           ))}
 
@@ -112,8 +114,7 @@ async function clearCart() {
             {cartProducts.reduce((acc, p) => acc + p.Price * p.Quantity, 0).toFixed(2)}
           </h3>
 
-          <button onClick={checkout}>Beställ</button>
-          <button onClick={clearCart} style={{ marginLeft: "10px", backgroundColor: "#f88" }}>
+          <button onClick={clearCart}>
             Rensa kundvagn
           </button>
         </>

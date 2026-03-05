@@ -1,6 +1,5 @@
 const conn = require("../database");
 
-// 1. Get cart items
 exports.getCart = async (req, res) => {
   const uid = req.params.uid;
 
@@ -29,7 +28,6 @@ exports.getCart = async (req, res) => {
   }
 }
 
-// 2. Add new product to cart
 exports.addToCart = async (req, res) => {
   const { uid, pid, quantity } = req.body;
 
@@ -72,7 +70,6 @@ exports.addToCart = async (req, res) => {
   }
 };
 
-// 3. Update cart quantity
 exports.updateCart = async (req, res) => {
   const { uid, pid, quantity } = req.body;
 
@@ -98,7 +95,6 @@ exports.updateCart = async (req, res) => {
   }
 };
 
-// 4. Remove product from cart
 exports.removeFromCart = async (req, res) => {
   const { uid, pid } = req.body;
 
@@ -120,7 +116,6 @@ exports.removeFromCart = async (req, res) => {
   }
 };
 
-// 5. Checkout cart
 exports.checkoutCart = async (req, res) => {
   const { uid } = req.body;
 
@@ -134,11 +129,34 @@ exports.checkoutCart = async (req, res) => {
     const cartID = cartRows[0].CID;
 
     const [items] = await conn.promise().query(
-      `SELECT ci.PID, ci.Quantity, p.Stock
+      `SELECT ci.PID, ci.Quantity, p.Name, p.Price, p.Stock
        FROM cart_item ci
        JOIN product p ON ci.PID = p.PID
        WHERE ci.CID = ?`,
       [cartID]
+    );
+
+    if (!items.length) return res.status(400).json({ error: "Cart is empty" });
+
+    const totalPrice = items.reduce((acc, item) => acc + item.Price * item.Quantity, 0);
+
+    const [orderResult] = await conn.promise().query(
+      "INSERT INTO orders (UID, Price, Status, Creation_Time) VALUES (?, ?, 'pending', NOW())",
+      [uid, totalPrice]
+    );
+    const orderID = orderResult.insertId;
+
+    const orderItemsData = items.map(item => [
+      orderID,
+      item.PID,
+      item.Name,
+      item.Price,
+      item.Quantity
+    ]);
+
+    await conn.promise().query(
+      "INSERT INTO order_items (OID, PID, Product_Name, Price, Amount) VALUES ?",
+      [orderItemsData]
     );
 
     for (const item of items) {
@@ -153,13 +171,14 @@ exports.checkoutCart = async (req, res) => {
       [cartID]
     );
 
-    res.json({ message: "Checkout successful" });
+    res.json({ message: "Order created successfully", orderID });
+
   } catch (err) {
-    console.error(err);
+    console.error("checkoutCart error:", err);
+    res.status(500).json({ error: "Failed to checkout cart" });
   }
 };
 
-// 6. Clear cart
 exports.clearCart = async (req, res) => {
   const uid = req.params.uid;
 

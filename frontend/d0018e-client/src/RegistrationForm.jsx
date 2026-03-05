@@ -36,7 +36,7 @@ function RegistrationForm() {
 
   return (
     <form onSubmit={handleRegister}>
-      <h2>Register</h2>
+      <h2 className="loginregistration">Register</h2>
 
       <input
         type="text"
