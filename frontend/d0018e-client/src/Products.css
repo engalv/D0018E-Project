@@ -16,6 +16,10 @@
   justify-content: space-between;
 }
 
+.productspage {
+  margin-top: 100px;
+}
+
 .product-row:nth-child(odd) {
   background-color: white;
 }

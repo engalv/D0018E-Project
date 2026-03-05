@@ -5,6 +5,7 @@
   width: 100%;
   height: 70px;
   background-color: white;
+  color: black;
   z-index: 1;
 }
 
@@ -24,6 +25,12 @@
 
 .cd-logo {
   height: 60px;
+}
+
+.main-content {
+  padding-top: 80px;
+  max-width: 1280px;
+  margin: 0 auto;
 }
 
 .cart-button {
