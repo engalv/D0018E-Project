@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 8.0.45, for Win64 (x86_64)
+-- MySQL dump 10.13  Distrib 8.0.42, for Linux (x86_64)
 --
 -- Host: localhost    Database: scheme
 -- ------------------------------------------------------
--- Server version	8.0.45
+-- Server version	8.0.42
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -29,7 +29,7 @@ CREATE TABLE `cart` (
   PRIMARY KEY (`CID`),
   KEY `UID_idx` (`UID`),
   CONSTRAINT `UID_CART` FOREIGN KEY (`UID`) REFERENCES `user` (`UID`)
-) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=38 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -38,7 +38,7 @@ CREATE TABLE `cart` (
 
 LOCK TABLES `cart` WRITE;
 /*!40000 ALTER TABLE `cart` DISABLE KEYS */;
-INSERT INTO `cart` VALUES (9,1,'inactive'),(11,1,'active'),(12,2,'inactive'),(13,2,'inactive'),(14,4,'active'),(15,5,'active'),(16,7,'inactive'),(17,7,'active'),(18,2,'inactive'),(19,2,'inactive'),(20,2,'inactive'),(21,2,'inactive'),(22,2,'inactive'),(23,2,'inactive'),(24,2,'active'),(25,12,'inactive'),(26,12,'inactive'),(27,12,'inactive'),(28,12,'inactive'),(29,12,'inactive'),(30,12,'inactive');
+INSERT INTO `cart` VALUES (9,1,'inactive'),(11,1,'active'),(12,2,'inactive'),(13,2,'inactive'),(14,4,'active'),(15,5,'active'),(16,7,'inactive'),(17,7,'active'),(18,2,'inactive'),(19,2,'inactive'),(20,2,'inactive'),(21,2,'inactive'),(22,2,'inactive'),(23,2,'inactive'),(24,2,'active'),(25,12,'inactive'),(26,12,'inactive'),(27,12,'inactive'),(28,12,'inactive'),(29,12,'inactive'),(30,12,'inactive'),(31,14,'inactive'),(32,14,'inactive'),(33,14,'inactive'),(34,14,'active'),(35,15,'inactive'),(36,15,'inactive'),(37,16,'active');
 /*!40000 ALTER TABLE `cart` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -59,7 +59,7 @@ CREATE TABLE `cart_item` (
   KEY `CI_PID_idx` (`PID`),
   CONSTRAINT `CI_CID` FOREIGN KEY (`CID`) REFERENCES `cart` (`CID`),
   CONSTRAINT `CI_PID` FOREIGN KEY (`PID`) REFERENCES `product` (`PID`)
-) ENGINE=InnoDB AUTO_INCREMENT=62 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=77 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -68,7 +68,7 @@ CREATE TABLE `cart_item` (
 
 LOCK TABLES `cart_item` WRITE;
 /*!40000 ALTER TABLE `cart_item` DISABLE KEYS */;
-INSERT INTO `cart_item` VALUES (7,9,1,8),(10,11,2,7),(11,12,2,6),(12,12,1,5),(14,13,1,200),(15,14,1,10),(16,15,1,5),(17,13,2,15),(20,16,2,5),(21,17,1,975),(22,18,2,2),(23,19,2,4),(24,20,1,2),(27,21,2,3),(28,22,2,3),(36,23,2,2),(44,24,1,333),(45,24,2,1),(47,25,1,3),(48,25,2,3),(50,26,1,14),(57,27,2,5),(58,28,2,10),(59,29,1,5),(60,29,2,6),(61,30,1,5);
+INSERT INTO `cart_item` VALUES (7,9,1,8),(10,11,2,7),(11,12,2,6),(12,12,1,5),(14,13,1,200),(15,14,1,10),(16,15,1,5),(17,13,2,15),(20,16,2,5),(21,17,1,975),(22,18,2,2),(23,19,2,4),(24,20,1,2),(27,21,2,3),(28,22,2,3),(36,23,2,2),(44,24,1,333),(45,24,2,1),(47,25,1,3),(48,25,2,3),(50,26,1,14),(57,27,2,5),(58,28,2,10),(59,29,1,5),(60,29,2,6),(61,30,1,5),(62,31,1,1),(63,31,2,3),(65,32,2,3),(66,33,1,2),(67,33,2,2),(68,34,1,1),(71,35,1,4),(72,35,2,3),(73,36,2,4),(75,37,2,2),(76,37,1,1);
 /*!40000 ALTER TABLE `cart_item` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -81,7 +81,7 @@ DROP TABLE IF EXISTS `category`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `category` (
   `CID` int NOT NULL,
-  ` Name` varchar(255) DEFAULT NULL,
+  `Name` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`CID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -92,7 +92,32 @@ CREATE TABLE `category` (
 
 LOCK TABLES `category` WRITE;
 /*!40000 ALTER TABLE `category` DISABLE KEYS */;
+INSERT INTO `category` VALUES (1,'Film'),(2,'Musik'),(3,'Spel');
 /*!40000 ALTER TABLE `category` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `order`
+--
+
+DROP TABLE IF EXISTS `order`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `order` (
+  `OID` int NOT NULL,
+  `Amount` decimal(65,5) DEFAULT NULL,
+  `DATE` datetime DEFAULT NULL,
+  PRIMARY KEY (`OID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `order`
+--
+
+LOCK TABLES `order` WRITE;
+/*!40000 ALTER TABLE `order` DISABLE KEYS */;
+/*!40000 ALTER TABLE `order` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -115,7 +140,7 @@ CREATE TABLE `order_items` (
   KEY `OIPID_idx` (`PID`),
   CONSTRAINT `OIOID` FOREIGN KEY (`OID`) REFERENCES `orders` (`OID`),
   CONSTRAINT `OIPID` FOREIGN KEY (`PID`) REFERENCES `product` (`PID`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -124,7 +149,7 @@ CREATE TABLE `order_items` (
 
 LOCK TABLES `order_items` WRITE;
 /*!40000 ALTER TABLE `order_items` DISABLE KEYS */;
-INSERT INTO `order_items` VALUES (1,1,1,'Fallout: A Post Nuclear Role Playing Game',199.99,2),(2,6,1,'Fallout: A Post Nuclear Role Playing Game',199.99,5),(3,7,1,'Fallout: A Post Nuclear Role Playing Game',199.99,1),(4,8,2,'Cigarette CD',200.00,5),(5,9,2,'Cigarette CD',200.00,5),(6,10,2,'Cigarette CD',200.00,10),(7,11,1,'Fallout: A Post Nuclear Role Playing Game',199.99,5),(8,11,2,'Cigarette CD',200.00,6),(9,12,1,'Fallout: A Post Nuclear Role Playing Game',199.99,5);
+INSERT INTO `order_items` VALUES (1,1,1,'Fallout: A Post Nuclear Role Playing Game',199.99,2),(2,6,1,'Fallout: A Post Nuclear Role Playing Game',199.99,5),(3,7,1,'Fallout: A Post Nuclear Role Playing Game',199.99,1),(4,8,2,'Cigarette CD',200.00,5),(5,9,2,'Cigarette CD',200.00,5),(6,10,2,'Cigarette CD',200.00,10),(7,11,1,'Fallout: A Post Nuclear Role Playing Game',199.99,5),(8,11,2,'Cigarette CD',200.00,6),(9,12,1,'Fallout: A Post Nuclear Role Playing Game',199.99,5),(10,13,1,'Fallout: A Post Nuclear Role Playing Game',199.99,1),(11,13,2,'Cigarette CD',200.00,3),(12,14,2,'Cigarette CD',200.00,3),(13,15,1,'Fallout: A Post Nuclear Role Playing Game',199.99,2),(14,15,2,'Cigarette CD',200.00,2),(15,16,1,'Fallout: A Post Nuclear Role Playing Game',199.99,4),(16,16,2,'Cigarette CD',200.00,3),(17,17,2,'Cigarette CD',200.00,4);
 /*!40000 ALTER TABLE `order_items` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -145,7 +170,7 @@ CREATE TABLE `orders` (
   UNIQUE KEY `OID_UNIQUE` (`OID`),
   KEY `OrderUID_idx` (`UID`),
   CONSTRAINT `OrderUID` FOREIGN KEY (`UID`) REFERENCES `user` (`UID`)
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -154,7 +179,7 @@ CREATE TABLE `orders` (
 
 LOCK TABLES `orders` WRITE;
 /*!40000 ALTER TABLE `orders` DISABLE KEYS */;
-INSERT INTO `orders` VALUES (1,1,50.00,'pending','2026-03-05 17:41:01'),(2,1,50.00,'pending','2026-03-05 17:41:40'),(3,12,999.95,'pending','2026-03-05 20:29:32'),(4,12,999.95,'pending','2026-03-05 20:33:13'),(5,12,999.95,'pending','2026-03-05 20:34:46'),(6,12,999.95,'pending','2026-03-05 20:35:42'),(7,12,199.99,'pending','2026-03-05 20:37:00'),(8,12,1000.00,'pending','2026-03-05 20:38:43'),(9,12,1000.00,'pending','2026-03-05 20:42:32'),(10,12,2000.00,'pending','2026-03-05 20:42:51'),(11,12,2199.95,'pending','2026-03-05 20:43:07'),(12,12,999.95,'pending','2026-03-05 20:45:11');
+INSERT INTO `orders` VALUES (1,1,50.00,'pending','2026-03-05 17:41:01'),(2,1,50.00,'pending','2026-03-05 17:41:40'),(3,12,999.95,'pending','2026-03-05 20:29:32'),(4,12,999.95,'pending','2026-03-05 20:33:13'),(5,12,999.95,'pending','2026-03-05 20:34:46'),(6,12,999.95,'pending','2026-03-05 20:35:42'),(7,12,199.99,'pending','2026-03-05 20:37:00'),(8,12,1000.00,'pending','2026-03-05 20:38:43'),(9,12,1000.00,'pending','2026-03-05 20:42:32'),(10,12,2000.00,'pending','2026-03-05 20:42:51'),(11,12,2199.95,'pending','2026-03-05 20:43:07'),(12,12,999.95,'pending','2026-03-05 20:45:11'),(13,14,799.99,'pending','2026-03-05 21:26:52'),(14,14,600.00,'pending','2026-03-06 08:08:56'),(15,14,799.98,'pending','2026-03-06 08:33:39'),(16,15,1399.96,'pending','2026-03-10 04:03:11'),(17,15,800.00,'pending','2026-03-10 04:04:17');
 /*!40000 ALTER TABLE `orders` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -196,7 +221,10 @@ CREATE TABLE `product` (
   `Description` varchar(255) DEFAULT NULL,
   `Cover_Image` varchar(255) DEFAULT NULL,
   `Stock` int DEFAULT NULL,
-  PRIMARY KEY (`PID`)
+  `CID` int DEFAULT NULL,
+  PRIMARY KEY (`PID`),
+  KEY `CID` (`CID`),
+  CONSTRAINT `product_ibfk_1` FOREIGN KEY (`CID`) REFERENCES `category` (`CID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -206,7 +234,7 @@ CREATE TABLE `product` (
 
 LOCK TABLES `product` WRITE;
 /*!40000 ALTER TABLE `product` DISABLE KEYS */;
-INSERT INTO `product` VALUES (1,'Fallout: A Post Nuclear Role Playing Game',199.99000,'It is worth it','cover.jpg',746),(2,'Cigarette CD',200.00000,'It is not worth it','cover2.jpg',436);
+INSERT INTO `product` VALUES (1,'Fallout: A Post Nuclear Role Playing Game',199.99000,'It is worth it','cover1.png',739,3),(2,'Cigarette CD',200.00000,'It is not worth it','cover2.png',421,2);
 /*!40000 ALTER TABLE `product` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -229,7 +257,7 @@ CREATE TABLE `review` (
   KEY `PID_REVIEW_idx` (`PID`),
   CONSTRAINT `PID_REVIEW` FOREIGN KEY (`PID`) REFERENCES `product` (`PID`),
   CONSTRAINT `UID_REVIEW` FOREIGN KEY (`UID`) REFERENCES `user` (`UID`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -238,7 +266,7 @@ CREATE TABLE `review` (
 
 LOCK TABLES `review` WRITE;
 /*!40000 ALTER TABLE `review` DISABLE KEYS */;
-INSERT INTO `review` VALUES (1,2,1,5,'Wow this sucks','2026-03-03 18:53:17'),(2,2,1,5,'This shit is the worst thing ever ngl','2026-03-03 18:55:13'),(3,1,1,1,'It\'s OK I guess.','2026-03-03 18:55:44'),(4,2,2,5,'Wow I like it so bad','2026-03-03 19:07:21'),(5,1,2,5,NULL,'2026-03-05 20:19:06'),(6,1,2,5,NULL,'2026-03-05 20:19:10'),(7,1,2,5,NULL,'2026-03-05 20:19:10'),(8,1,2,5,'s','2026-03-05 20:19:15'),(9,1,2,5,'s','2026-03-05 20:29:11'),(10,1,2,5,NULL,'2026-03-05 20:29:11');
+INSERT INTO `review` VALUES (1,2,1,5,'Wow this sucks','2026-03-03 18:53:17'),(2,2,1,5,'This shit is the worst thing ever ngl','2026-03-03 18:55:13'),(3,1,1,1,'It\'s OK I guess.','2026-03-03 18:55:44'),(4,2,2,5,'Wow I like it so bad','2026-03-03 19:07:21'),(5,1,2,5,NULL,'2026-03-05 20:19:06'),(6,1,2,5,NULL,'2026-03-05 20:19:10'),(7,1,2,5,NULL,'2026-03-05 20:19:10'),(8,1,2,5,'s','2026-03-05 20:19:15'),(9,1,2,5,'s','2026-03-05 20:29:11'),(10,1,2,5,NULL,'2026-03-05 20:29:11'),(11,15,1,3,'hej','2026-03-10 04:03:34'),(12,15,1,3,'hej','2026-03-10 04:03:36'),(13,15,1,3,'hej','2026-03-10 04:03:42');
 /*!40000 ALTER TABLE `review` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -258,7 +286,7 @@ CREATE TABLE `user` (
   PRIMARY KEY (`UID`),
   UNIQUE KEY `Password_UNIQUE` (`Password`),
   UNIQUE KEY `Email_UNIQUE` (`Email`)
-) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -267,7 +295,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (1,'swag',0,'swag@swag','$2b$10$fEeZC8VA7.DkT3HubQEqPeU.8F8z2RxilzRChMILUyCLwKpnBQ3l2'),(2,'Beans',0,'bing@soy','$2b$10$k.hFgXco3S8JDid8xHHCp.Z942AmiIPUcvPvy4RhMJeQB0/YmYHBq'),(3,'beans',0,'beans@swag','$2b$10$nrSFt0EEIa83ObFTjgIrLeS9j4q7UjgeedlcTsRQiAcY8qgh.Y6hu'),(4,'user1',0,'user1@user1','$2b$10$Gfo7Y8ATw85LAungNMVeP.Evf3KVWKNpXs9ExnkHtbVH6kJfOPDoK'),(5,'user2',0,'user2@user2','$2b$10$uqFgv8R2SN3v7guSANnYx.cg/XfdqbCKOJQozc0OLrIrhKnEUEbCe'),(6,'user3',0,'user3@user3','$2b$10$hUiU.hGGRw8YFQ//8Eb.O.1AHF7deFLgZXAPwgFrQoPXyWOY2UCzK'),(7,'test50',0,'test50@test50','$2b$10$MNKAmo/ettQqtHpAb4YCEuXLZmjXU/nIg0tMLJnPajXM.3JZuNJ46'),(11,'ba',0,'Swag@2019','$2b$10$c7OrxZWBbCjhEkgfzv0Ax.zNfGr5w9q7I4tW2ymF6wpuozb7gvxQi'),(12,'sa',0,'swag@soy','$2b$10$MHKPFnrkoU85SrCPdggCU.YSnkCa8cyf/0LXZFVJZfFTZ4KvOuwTa'),(13,'soy',0,'soy@soy','$2b$10$S4kkd0ILV382Jvo2QY3EEuEKWwXDPr.ZPFQL9TCOy3FEu/hYu05iW');
+INSERT INTO `user` VALUES (1,'swag',0,'swag@swag','$2b$10$fEeZC8VA7.DkT3HubQEqPeU.8F8z2RxilzRChMILUyCLwKpnBQ3l2'),(2,'Beans',0,'bing@soy','$2b$10$k.hFgXco3S8JDid8xHHCp.Z942AmiIPUcvPvy4RhMJeQB0/YmYHBq'),(3,'beans',0,'beans@swag','$2b$10$nrSFt0EEIa83ObFTjgIrLeS9j4q7UjgeedlcTsRQiAcY8qgh.Y6hu'),(4,'user1',0,'user1@user1','$2b$10$Gfo7Y8ATw85LAungNMVeP.Evf3KVWKNpXs9ExnkHtbVH6kJfOPDoK'),(5,'user2',0,'user2@user2','$2b$10$uqFgv8R2SN3v7guSANnYx.cg/XfdqbCKOJQozc0OLrIrhKnEUEbCe'),(6,'user3',0,'user3@user3','$2b$10$hUiU.hGGRw8YFQ//8Eb.O.1AHF7deFLgZXAPwgFrQoPXyWOY2UCzK'),(7,'test50',0,'test50@test50','$2b$10$MNKAmo/ettQqtHpAb4YCEuXLZmjXU/nIg0tMLJnPajXM.3JZuNJ46'),(11,'ba',0,'Swag@2019','$2b$10$c7OrxZWBbCjhEkgfzv0Ax.zNfGr5w9q7I4tW2ymF6wpuozb7gvxQi'),(12,'sa',0,'swag@soy','$2b$10$MHKPFnrkoU85SrCPdggCU.YSnkCa8cyf/0LXZFVJZfFTZ4KvOuwTa'),(13,'soy',0,'soy@soy','$2b$10$S4kkd0ILV382Jvo2QY3EEuEKWwXDPr.ZPFQL9TCOy3FEu/hYu05iW'),(14,'gg',0,'g@g','$2b$10$fuzi0MfXhqS.0/AyrdOlW.qnbX/i154rylHE4Pv3hKDZIvZ5UWw/O'),(15,'sven',0,'sven@sven','$2b$10$nrqxwiSkjSN2IvMCMPk/puLVR3VG26kasgy94tqMZbeuu/8KVuj3a'),(16,'c',0,'c@c','$2b$10$ctTZVF5OA2t1vPFZQesQ9uMTJn1wZTGf3C2GDMnFlhD5/Db54KPqq');
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -280,4 +308,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-03-05 22:07:24
+-- Dump completed on 2026-03-13 17:14:20
