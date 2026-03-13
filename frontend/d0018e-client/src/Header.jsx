@@ -10,15 +10,22 @@ function Header({ toggleCart, cartCount, cartOpen, countCart, updateCart, syncCa
       <div className="header-inner">
 
         <div className="cdk">
+          <Link to="/">
           <img src={Kungen} className="cd-logo" alt="cdlogo"/>
-          <h1>CDKUNGEN.SE</h1>
-          
+          </Link>
+          <h1>CDKUNGEN.SE</h1>          
+
           <nav className="navbar">
-              <Link to="/" className="nav-button">Hem</Link>
               <Link to="/user" className="nav-button">Orderhistorik</Link>
           </nav>
         </div>
 
+
+        <div className="login-container">
+          <button className="login-button">
+            <Link to="/login">Logga in</Link>
+          </button>
+        </div>
 
         <div className="cart-container">
           <button className="cart-button" onClick={toggleCart}>

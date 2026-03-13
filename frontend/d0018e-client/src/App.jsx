@@ -30,6 +30,29 @@ function App() {
       });
   }, [user, updateCart]);
 
+  function ProductView({ user, cartOpen, openCart, updateCart, syncCart, cartCount }) {
+    return (
+      <div className="duct">
+        <Products
+          uid={user.UID}
+          updateCart={updateCart}
+          syncCart={syncCart}
+          countCart={cartCount}
+        />
+
+        {cartOpen && (
+          <CartBox
+            uid={user.UID}
+            updateCart={updateCart}
+            syncCart={syncCart}
+            closeCart={() => openCart(false)}
+            countCart={cartCount}
+          />
+        )}
+      </div>
+    );
+  }
+
   return (
     <div className="app-container">
       <Header
@@ -58,44 +81,52 @@ function App() {
           />
 
           {/* Protected routes */}
-          {user && (
-            <>
-              <Route
-                path="/"
-                element={
-                  <div className="duct">
-                    <Products
-                      uid={user.UID}
+            {user && (
+              <>
+                <Route
+                  path="/"
+                  element={
+                    <ProductView
+                      user={user}
+                      cartOpen={cartOpen}
+                      openCart={openCart}
                       updateCart={updateCart}
                       syncCart={syncCart}
-                      countCart={cartCount}
+                      cartCount={cartCount}
                     />
-                    {cartOpen && (
-                      <CartBox
-                        uid={user.UID}
-                        updateCart={updateCart}
-                        syncCart={syncCart}
-                        closeCart={() => openCart(false)}
-                        countCart={cartCount}
-                      />
-                    )}
-                  </div>
-                }
-              />
-              <Route
-                path="/checkout"
-                element={<Checkout uid={user.UID} syncCart={syncCart} />}
-              />
-              <Route
-                path="/product/:pid"
-                element={<ProductPage uid={user.UID} syncCart={syncCart} />}
-              />
-              <Route
-                path="/user"
-                element={<UserPage uid={user.UID} />}
-              />
-            </>
-          )}
+                  }
+                />
+
+                <Route
+                  path="/category/:cid"
+                  element={
+                    <ProductView
+                      user={user}
+                      cartOpen={cartOpen}
+                      openCart={openCart}
+                      updateCart={updateCart}
+                      syncCart={syncCart}
+                      cartCount={cartCount}
+                    />
+                  }
+                />
+
+                <Route
+                  path="/checkout"
+                  element={<Checkout uid={user.UID} syncCart={syncCart} />}
+                />
+
+                <Route
+                  path="/product/:pid"
+                  element={<ProductPage uid={user.UID} syncCart={syncCart} />}
+                />
+
+                <Route
+                  path="/user"
+                  element={<UserPage uid={user.UID} />}
+                />
+              </>
+            )}
 
           {/* Fallback */}
           <Route path="*" element={<Navigate to={user ? "/" : "/login"} />} />

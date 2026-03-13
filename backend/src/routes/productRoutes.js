@@ -6,5 +6,6 @@ router.get("/", productController.getAllProducts);
 router.post("/review", productController.addReview);
 router.get("/:pid/reviews", productController.getReviews); 
 router.get("/:pid", productController.getSpecificProduct);
+router.get("/category/:cid", productController.getProductsCategory);
 
 module.exports = router;

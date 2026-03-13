@@ -11,11 +11,6 @@ body {
   padding-top: 40px;
 }
 
-.duct {
-  background-color: rgb(202, 202, 202);
-  box-sizing: border-box;
-}
-
 #orderbutton {
   margin: 20px;
 }
