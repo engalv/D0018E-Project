@@ -45,12 +45,13 @@
 .product-stock {
   text-align: center;
   color: #000000;
-  font-size:12px;
+  font-size:10px;
 }
 
 .product-price {
   text-align: center;
   font-weight: bold;
+  font-size:14px;
 }
 
 .buy-btn {
@@ -65,7 +66,7 @@
 }
 
 .textfont {
-  font-size:20px;
+  font-size:14px;
   padding-top:10px;
   padding-bottom: 10px;
   font-weight: bold;

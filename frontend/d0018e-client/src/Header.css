@@ -26,6 +26,7 @@
 
 .cd-logo {
   height: 50px;
+  cursor: pointer;
 }
 
 .navbar>a {
@@ -66,4 +67,17 @@
 .cart-container {
   position: relative;
   display: inline-block;
+}
+
+.login-container {
+  position:relative;
+  display: inline-block;
+}
+
+.login-button {
+  position: relative;
+  font-size: 12px;
+  color: white;
+  border: none;
+  cursor: pointer;
 }

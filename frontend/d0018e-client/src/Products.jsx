@@ -1,20 +1,27 @@
 import React, { useState, useEffect } from "react";
 import "./Products.css";
-import { Link } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 
 function Products({ uid, syncCart, updateCart, countCart }) {
   const [products, syncProducts] = useState([]);
   const [qty, syncQty] = useState({});
+  const { cid } = useParams();
 
   useEffect(() => {
-    fetch("http://localhost:5000/product")
+
+    const url = cid
+      ? `http://localhost:5000/product/category/${cid}`
+      : "http://localhost:5000/product";
+
+    fetch(url)
       .then(res => res.json())
       .then(data => {
         syncProducts(data);
         syncQty(data.reduce((acc, p) => ({ ...acc, [p.PID]: 1 }), {}));
       })
       .catch(err => console.error("fetch error:", err));
-  }, [updateCart]);
+
+  }, [updateCart, cid]);
 
   const buyProduct = (product) => {
     const quantity = qty[product.PID] || 1;
@@ -45,14 +52,13 @@ function Products({ uid, syncCart, updateCart, countCart }) {
       <div className="products-list">
         {products.map(p => (
           <div key={p.PID} className="product-row">
+            <img src={`/images/${p.Cover_Image}`} alt={p.Name} className="product-image" />
             <Link to={`/product/${p.PID}`} style={{ textDecoration: "none", color: "inherit" }}>
-              <img src={p.Cover_Image} alt={p.Name} className="product-image" />
               <div className="product-name">{p.Name}</div>
-              <div className="product-description">{p.Description}</div>
             </Link>
 
             <div className="product-stock">
-              {p.Stock > 0 ? `${p.Stock}` : "Slut i lager"}
+              {p.Stock > 0 ? `${p.Stock}` : "Slut i lager"} st
             </div>
 
             <div className="product-price">£{p.Price}</div>

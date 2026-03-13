@@ -71,6 +71,11 @@ function ProductPage({ uid, syncCart }) {
   return (
     <div className="productspage" style={{ padding: "20px" }}>
       <h1>{product.Name}</h1>
+      <img 
+        src={`/images/${product.Cover_Image}`} 
+        alt={product.Name} 
+        style={{ width: "300px", height: "300px", objectFit: "cover" }} 
+      />
       <p>{product.Description}</p>
       <p>£{product.Price}</p>
       <p>I lager: {product.Stock}</p>

@@ -33,6 +33,22 @@ exports.getSpecificProduct = async (req, res) => {
     }
 }
 
+exports.getProductsCategory = async (req, res) => {
+  const cid = req.params.cid;
+
+  try {
+    const [products] = await conn.promise().query(
+      "SELECT * FROM product WHERE CID = ?",
+      [cid]
+    );
+
+    res.json(products);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to fetch product," });
+  }
+};
+
 
 exports.addReview = async (req, res) => {
     const {uid, pid, rating, comment} = req.body;
