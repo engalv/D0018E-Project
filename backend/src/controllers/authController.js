@@ -1,5 +1,6 @@
 const bcrypt = require("bcryptjs");
 const conn = require("../database");
+const jwt = require("jsonwebtoken");
 
 // REGISTER
 exports.register = async (req, res) => {
@@ -54,8 +55,20 @@ exports.login = async (req, res) => {
 
     if (!valid)
       return res.status(401).json({ error: "Invalid email or password" });
+    
+    const token = jwt.sign(
+      {
+        UID: user.UID,
+        Name: user.Name,
+        Is_Admin: user.Is_Admin
+      },
+      "supersecretkey",
+      { expiresIn: "24h" }
+    );
 
+    // Send token and user info
     res.json({
+      token,
       user: {
         UID: user.UID,
         Name: user.Name,

@@ -13,24 +13,67 @@ import CategoryBox from "./CategoryBox.jsx";
 
 import "./App.css";
 
+// decodeJWT did not want to work as an import for some reason
+function decodeJwt(token) {
+  try {
+    const payload = token.split(".")[1];
+    const decoded = JSON.parse(atob(payload.replace(/-/g, "+").replace(/_/g, "/")));
+    console.log("Decoded JWT:", decoded);
+    return decoded;
+  } catch (err) {
+    console.error("Failed to decode token:", err);
+    return null;
+  }
+}
+
 function App() {
   const [user, setUser] = useState(null);
+  const [authChecked, setAuthChecked] = useState(false);
   const [updateCart, syncCart] = useState(false);
   const [cartOpen, openCart] = useState(false);
   const [cartCount, countCart] = useState(0);
 
   useEffect(() => {
+    const token = localStorage.getItem("token");
+    console.log("Token on load:", token);
+
+    if (!token) {
+      console.log("No token found");
+      setAuthChecked(true);
+      return;
+    }
+
+    const decoded = decodeJwt(token);
+    if (decoded && decoded.UID) {
+      console.log("Setting user from token:", decoded);
+      setUser(decoded);
+    } else {
+      console.log("Invalid token, removing...");
+      localStorage.removeItem("token");
+    }
+    setAuthChecked(true);
+  }, []);
+
+  // --- Fetch cart when user or updateCart changes ---
+  useEffect(() => {
     if (!user) return;
 
+    console.log("Fetching cart for user:", user.UID);
     fetch(`http://localhost:5000/cart/${user.UID}`)
-      .then(res => res.json())
-      .then(data => {
+      .then((res) => res.json())
+      .then((data) => {
         const totalQty = data.reduce((acc, p) => acc + p.Quantity, 0);
+        console.log("Cart total quantity:", totalQty);
         countCart(totalQty);
-      });
+      })
+      .catch((err) => console.error("Error fetching cart:", err));
   }, [user, updateCart]);
 
-  function ProductView({ user, cartOpen, openCart, updateCart, syncCart, cartCount }) {
+  // --- Product view component ---
+  const ProductView = () => {
+    if (!authChecked) return <p>Loading...</p>;
+    if (!user) return <Navigate to="/login" />;
+
     return (
       <div className="duct">
         <Products
@@ -39,7 +82,6 @@ function App() {
           syncCart={syncCart}
           countCart={cartCount}
         />
-
         {cartOpen && (
           <CartBox
             uid={user.UID}
@@ -51,12 +93,15 @@ function App() {
         )}
       </div>
     );
-  }
+  };
+
+  // --- Wait for auth check before rendering ---
+  if (!authChecked) return <p>Loading...</p>;
 
   return (
     <div className="app-container">
       <Header
-        toggleCart={() => openCart(prev => !prev)}
+        toggleCart={() => openCart((prev) => !prev)}
         cartCount={cartCount}
         cartOpen={cartOpen}
         user={user}
@@ -81,55 +126,32 @@ function App() {
           />
 
           {/* Protected routes */}
-            {user && (
-              <>
-                <Route
-                  path="/"
-                  element={
-                    <ProductView
-                      user={user}
-                      cartOpen={cartOpen}
-                      openCart={openCart}
-                      updateCart={updateCart}
-                      syncCart={syncCart}
-                      cartCount={cartCount}
-                    />
-                  }
-                />
-
-                <Route
-                  path="/category/:cid"
-                  element={
-                    <ProductView
-                      user={user}
-                      cartOpen={cartOpen}
-                      openCart={openCart}
-                      updateCart={updateCart}
-                      syncCart={syncCart}
-                      cartCount={cartCount}
-                    />
-                  }
-                />
-
-                <Route
-                  path="/checkout"
-                  element={<Checkout uid={user.UID} syncCart={syncCart} />}
-                />
-
-                <Route
-                  path="/product/:pid"
-                  element={<ProductPage uid={user.UID} syncCart={syncCart} />}
-                />
-
-                <Route
-                  path="/user"
-                  element={<UserPage uid={user.UID} />}
-                />
-              </>
-            )}
+          <Route
+            path="/"
+            element={user ? <ProductView /> : <Navigate to="/login" />}
+          />
+          <Route
+            path="/category/:cid"
+            element={user ? <ProductView /> : <Navigate to="/login" />}
+          />
+          <Route
+            path="/checkout"
+            element={user ? <Checkout uid={user.UID} syncCart={syncCart} /> : <Navigate to="/login" />}
+          />
+          <Route
+            path="/product/:pid"
+            element={user ? <ProductPage uid={user.UID} syncCart={syncCart} /> : <Navigate to="/login" />}
+          />
+          <Route
+            path="/user"
+            element={user ? <UserPage uid={user.UID} /> : <Navigate to="/login" />}
+          />
 
           {/* Fallback */}
-          <Route path="*" element={<Navigate to={user ? "/" : "/login"} />} />
+          <Route
+            path="*"
+            element={user ? <Navigate to="/" /> : <Navigate to="/login" />}
+          />
         </Routes>
       </div>
     </div>
