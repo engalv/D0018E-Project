@@ -10,7 +10,8 @@ router.get("/:pid", productController.getSpecificProduct);
 router.get("/category/:cid", productController.getProductsCategory);
 // Admin routes
 router.post("/", authenticate, requireAdmin, productController.addProduct);
-//router.put("/:pid", authenticate, requireAdmin, productController.updateProduct);
-//router.delete("/:pid", authenticate, requireAdmin, productController.deleteProduct);
+router.put("/admin/product/:pid/stock", productController.updateProductStock);
+router.put("/admin/product/:pid", productController.updateProductInfo);
+router.delete("/admin/review/:rid", productController.deleteReview);
 
 module.exports = router;

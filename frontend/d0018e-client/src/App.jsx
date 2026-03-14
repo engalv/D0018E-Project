@@ -83,15 +83,6 @@ function App() {
           syncCart={syncCart}
           countCart={cartCount}
         />
-        {cartOpen && (
-          <CartBox
-            uid={user.UID}
-            updateCart={updateCart}
-            syncCart={syncCart}
-            closeCart={() => openCart(false)}
-            countCart={cartCount}
-          />
-        )}
       </div>
     );
   };
@@ -142,7 +133,7 @@ function App() {
           />
           <Route
             path="/product/:pid"
-            element={user ? <ProductPage uid={user.UID} syncCart={syncCart} /> : <Navigate to="/login" />}
+            element={user ? <ProductPage uid={user.UID} syncCart={syncCart} user={user} /> : <Navigate to="/login" />}
           />
           <Route
             path="/user"
