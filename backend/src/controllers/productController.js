@@ -58,12 +58,39 @@ exports.addReview = async (req, res) => {
     }
 
     try {
-        await conn.promise().query(
+        const [orders] = await conn.promise().query(
+            `SELECT oi.* 
+             FROM order_items oi
+             JOIN orders o ON o.OID = oi.OID
+             WHERE o.UID = ? AND oi.PID = ?`,
+            [uid, pid]
+        );
+
+        if (orders.length === 0) {
+            return res.status(403).json({ error: "You can only review products you have purchased." });
+        }
+        const [existing] = await conn.promise().query(
+            "SELECT * FROM review WHERE PID = ? AND UID = ?",
+            [pid, uid]
+        );
+
+        if (existing.length > 0) {
+            return res.status(400).json({
+                error: "User has already reviewed this product."
+            });
+        }
+
+        const [result] = await conn.promise().query(
             "INSERT INTO review (PID, UID, Rating, Comment) VALUES (?, ?, ?, ?)",
             [pid, uid, rating, comment || null] // Comment text is not mandatory
         )
+
+        res.status(201).json({
+            message: "Review added",
+            RID: result.insertId
+        })
     } catch (err) {
-        console.err(err)
+        console.error(err)
         res.status(500).json({ error: "Failed to add review"})
     }
 }
@@ -88,4 +115,32 @@ exports.getReviews = async (req, res) => {
         console.error(err);
         res.status(500).json({ error: "There is an error fetching the reviews."})
     }
+}
+
+exports.addProduct = async (req, res) => {
+    const {Name, Price, Description, Cover_Image, Stock, CID} = req.body;
+
+    if (!Name || Price == null || Stock == null || CID == null || !Description) {
+        return res.status(400).json({
+            error: "Name, price, stock or category ID missing."
+         })
+    }
+
+    try {
+        const [result] = await conn.promise().query(
+            `INSERT INTO product (Name, Price, Description, Cover_Image, Stock, CID)
+            VALUES (?, ?, ?, ?, ?, ?)`,
+            [Name, Price, Description, Cover_Image || null, Stock, CID]
+        )
+
+        res.status(201).json({
+            message: "Product created",
+            PID: result.insertId
+        })
+    } catch (err) {
+        console.error(err)
+        res.status(500).json({ error: "Failed to create product."})
+    }
+    
+     
 }
