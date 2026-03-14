@@ -2,29 +2,54 @@ import React from "react";
 import CartBox from "./CartBox";
 import "./Header.css";
 import Kungen from "../images/CDKungen.png";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
-function Header({ toggleCart, cartCount, cartOpen, countCart, updateCart, syncCart, closeCart, user }) {
+function Header({ toggleCart, cartCount, cartOpen, countCart, updateCart, syncCart, closeCart, user, setUser }) {
+  const navigate = useNavigate();
+
+  // --- Logout handler ---
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    setUser(null);                    
+    navigate("/login");               
+    window.location.reload(); 
+  };
+
   return (
     <header className="header">
       <div className="header-inner">
 
         <div className="cdk">
           <Link to="/">
-          <img src={Kungen} className="cd-logo" alt="cdlogo"/>
+            <img src={Kungen} className="cd-logo" alt="cdlogo"/>
           </Link>
           <h1>CDKUNGEN.SE</h1>          
 
           <nav className="navbar">
-              <Link to="/user" className="nav-button">Orderhistorik</Link>
+            <Link to="/user" className="nav-button">Orderhistorik</Link>
+
+            {/* Admin button */}
+            {user?.Is_Admin === 1 && (
+              <button
+                className="nav-button admin-button"
+                onClick={() => navigate("/admin")}
+              >
+                Admin
+              </button>
+            )}
           </nav>
         </div>
 
-
         <div className="login-container">
-          <button className="login-button">
-            <Link to="/login">Logga in</Link>
-          </button>
+          {!user ? (
+            <button className="login-button">
+              <Link to="/login">Logga in</Link>
+            </button>
+          ) : (
+            <button className="login-button" onClick={handleLogout}>
+              Logga ut
+            </button>
+          )}
         </div>
 
         <div className="cart-container">
@@ -33,8 +58,15 @@ function Header({ toggleCart, cartCount, cartOpen, countCart, updateCart, syncCa
             {cartCount > 0 && <span className="cart-counter">{cartCount}</span>}
           </button>
 
-            {cartOpen && user && (<CartBox uid={user.UID} updateCart={updateCart} syncCart={syncCart} countCart={countCart} closeCart={closeCart}/>
-            )}
+          {cartOpen && user && (
+            <CartBox
+              uid={user.UID}
+              updateCart={updateCart}
+              syncCart={syncCart}
+              countCart={countCart}
+              closeCart={closeCart}
+            />
+          )}
         </div>
 
       </div>

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import api from "./api";
 
 function LoginForm({ setUser }) {
@@ -7,6 +8,8 @@ function LoginForm({ setUser }) {
   const [message, setMessage] = useState("");
   const [isError, setIsError] = useState(false);
 
+  const navigate = useNavigate(); 
+
   const handleLogin = async (e) => {
     e.preventDefault();
     setMessage("");
@@ -14,16 +17,19 @@ function LoginForm({ setUser }) {
 
     try {
       const res = await api.post("/login", { email, password });
+
       setMessage("Login successful!");
       setIsError(false);
 
       console.log("Logged in user:", res.data.user);
       setUser(res.data.user);
 
-    } catch (err) {
-      const errorMessage =
-        err.response?.data?.error || "Login failed";
+      localStorage.setItem("token", res.data.token);
 
+      navigate("/");
+
+    } catch (err) {
+      const errorMessage = err.response?.data?.error || "Login failed";
       setMessage(errorMessage);
       setIsError(true);
     }
@@ -41,7 +47,6 @@ function LoginForm({ setUser }) {
           onChange={e => setEmail(e.target.value)}
           required
         />
-
         <input
           type="password"
           placeholder="Password"
@@ -49,7 +54,6 @@ function LoginForm({ setUser }) {
           onChange={e => setPassword(e.target.value)}
           required
         />
-
         <button type="submit">Login</button>
       </form>
 
@@ -61,7 +65,7 @@ function LoginForm({ setUser }) {
 
       <p>
         Har du inget konto? <a href="/register">Registrera dig här</a>
-    </p>
+      </p>
     </div>
   );
 }
