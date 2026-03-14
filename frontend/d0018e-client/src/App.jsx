@@ -11,6 +11,7 @@ import RegistrationForm from "./RegistrationForm.jsx";
 import UserPage from "./UserPage.jsx";
 import CategoryBox from "./CategoryBox.jsx";
 import AdminPage from "./AdminPage.jsx"
+import UserProfile from "./UserProfile.jsx";
 
 import "./App.css";
 
@@ -142,6 +143,11 @@ function App() {
           <Route
             path="/admin"
             element={user?.Is_Admin ? <AdminPage user={user} /> : <Navigate to="/" />}
+          />
+
+          <Route
+            path="/profile"
+            element={user ? <UserProfile /> : <Navigate to="/login" />}
           />
 
           {/* Fallback */}
