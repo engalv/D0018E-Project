@@ -26,7 +26,6 @@ function Header({ toggleCart, cartCount, cartOpen, countCart, updateCart, syncCa
           <h1>CDKUNGEN.SE</h1>          
 
           <nav className="navbar">
-            <Link to="/user" className="nav-button">Orderhistorik</Link>
 
             {/* Admin button */}
             {user?.Is_Admin === 1 && (
@@ -51,6 +50,8 @@ function Header({ toggleCart, cartCount, cartOpen, countCart, updateCart, syncCa
             </button>
           )}
         </div>
+
+        <Link to="/profile" className="nav-button">Profil</Link>
 
         <div className="cart-container">
           <button className="cart-button" onClick={toggleCart}>
