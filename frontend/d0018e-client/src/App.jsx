@@ -10,6 +10,7 @@ import LoginForm from "./LoginForm.jsx";
 import RegistrationForm from "./RegistrationForm.jsx";
 import UserPage from "./UserPage.jsx";
 import CategoryBox from "./CategoryBox.jsx";
+import AdminPage from "./AdminPage.jsx"
 
 import "./App.css";
 
@@ -105,6 +106,7 @@ function App() {
         cartCount={cartCount}
         cartOpen={cartOpen}
         user={user}
+        setUser={setUser}
         countCart={countCart}
         updateCart={updateCart}
         syncCart={syncCart}
@@ -145,6 +147,10 @@ function App() {
           <Route
             path="/user"
             element={user ? <UserPage uid={user.UID} /> : <Navigate to="/login" />}
+          />
+          <Route
+            path="/admin"
+            element={user?.Is_Admin ? <AdminPage user={user} /> : <Navigate to="/" />}
           />
 
           {/* Fallback */}
