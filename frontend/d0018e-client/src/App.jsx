@@ -83,15 +83,6 @@ function App() {
           syncCart={syncCart}
           countCart={cartCount}
         />
-        {cartOpen && (
-          <CartBox
-            uid={user.UID}
-            updateCart={updateCart}
-            syncCart={syncCart}
-            closeCart={() => openCart(false)}
-            countCart={cartCount}
-          />
-        )}
       </div>
     );
   };
