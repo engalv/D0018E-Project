@@ -22,3 +22,4 @@ function requireAdmin(req, res, next) {
 }
 
 module.exports = { authenticate, requireAdmin };
+

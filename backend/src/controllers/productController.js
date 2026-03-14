@@ -1,6 +1,7 @@
 const conn = require("../database");
 
 // Should add a get only one specific product function for pages where you potentially also can see reviews
+// DONE!
 
 // Get all products
 exports.getAllProducts = async (req, res) => {
@@ -144,3 +145,84 @@ exports.addProduct = async (req, res) => {
     
      
 }
+
+exports.updateProductStock = async (req, res) => {
+    const PID = req.params.pid;
+    const { Stock } = req.body;
+
+    if (Stock === null || Stock < 0) {
+        return res.status(400).json({ error: "Stock error" })
+    }
+
+    try {
+        const [result] = await conn.promise().query(
+            `UPDATE product SET Stock = ? WHERE PID = ?`,
+            [Stock, PID]
+        )
+        
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: "Product not found"})
+        }
+
+        res.json({ message: "Stock updated.🤑"})
+    } catch (err) {
+        console.error(err) 
+        res.status(500).json({ error: "Could not update stock."})
+    }
+}
+
+exports.updateProductInfo = async (req, res) => {
+  const pid = req.params.pid;
+  const { Name, Price, Description, Cover_Image, CID } = req.body;
+
+  if (!Name && Price == null && !Description && !Cover_Image && CID == null) {
+    return res.status(400).json({ error: "Nothing to update." });
+  }
+
+  const updates = [];
+  const params = [];
+
+  if (Name) { updates.push("Name = ?"); params.push(Name); }
+  if (Price != null) { updates.push("Price = ?"); params.push(Price); }
+  if (Description) { updates.push("Description = ?"); params.push(Description); }
+  if (Cover_Image) { updates.push("Cover_Image = ?"); params.push(Cover_Image); }
+  if (CID != null) { updates.push("CID = ?"); params.push(CID); }
+
+  params.push(pid);
+
+  try {
+    const [result] = await conn.promise().query(
+      `UPDATE product SET ${updates.join(", ")} WHERE PID = ?`,
+      params
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: "Product not found." });
+    }
+
+    res.json({ message: "Product updated." });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to update product." });
+  }
+};
+
+exports.deleteReview = async (req, res) => {
+  const rid = req.params.rid;
+
+  try {
+    const [result] = await conn.promise().query(
+      "DELETE FROM review WHERE RID = ?",
+      [rid]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: "Review not found." });
+    }
+
+    res.json({ message: "Review deleted." });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to delete review." });
+  }
+};

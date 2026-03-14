@@ -142,7 +142,7 @@ function App() {
           />
           <Route
             path="/product/:pid"
-            element={user ? <ProductPage uid={user.UID} syncCart={syncCart} /> : <Navigate to="/login" />}
+            element={user ? <ProductPage uid={user.UID} syncCart={syncCart} user={user} /> : <Navigate to="/login" />}
           />
           <Route
             path="/user"

@@ -1,0 +1,80 @@
+.admin-container {
+  display: flex;
+  gap: 20px;
+  padding: 20px;
+  height: 100vh;
+  box-sizing: border-box;
+}
+
+.user-column {
+  width: 250px;
+  border-right: 1px solid #ccc;
+  padding-right: 10px;
+  overflow-y: auto;
+}
+
+.user-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.user-item {
+  cursor: pointer;
+  margin-bottom: 8px;
+}
+
+.order-column {
+  flex: 1;
+  border-right: 1px solid #ccc;
+  padding: 0 10px;
+  overflow-y: auto;
+}
+
+.product-column {
+  width: 250px;
+  padding-left: 10px;
+  overflow-y: auto;
+}
+
+.product-list,
+.order-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.product-item,
+.order-item {
+  margin-bottom: 8px;
+}
+
+.order-products {
+  margin: 5px 0 0 15px;
+  padding: 0;
+}
+
+.product-item.clickable {
+  cursor: pointer;
+  transition: background-color 0.2s;
+  padding: 4px;
+}
+
+.product-item.clickable:hover {
+  background-color: #f0f0f0;
+}
+
+.user-item.clickable {
+  cursor: pointer;
+  transition: background-color 0.2s;
+  padding: 4px;
+}
+
+.user-item.clickable:hover {
+  background-color: #f0f0f0;
+}
+
+.user-item.selected {
+  font-weight: bold;
+  background-color: #f0f0f0;
+}
