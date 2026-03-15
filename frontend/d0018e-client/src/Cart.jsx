@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "./Cart.css"
-
+import api from "./api";
+import "./Cart.css";
 
 function Cart({ uid, updateCart, syncCart, countCart }) {
   const [cartProducts, setCartProducts] = useState([]);
@@ -11,25 +11,22 @@ function Cart({ uid, updateCart, syncCart, countCart }) {
     fetchCart();
   }, [uid, updateCart]);
 
-  
   const checkout = () => {
     navigate("/checkout");
   };
 
-    async function fetchCart() {
-      try {
-        const res = await fetch(`http://localhost:5000/cart/${uid}`);
-        const data = await res.json();
-        setCartProducts(Array.isArray(data) ? data : []);
-
-        countCart && countCart(data.reduce((acc, p) => acc + p.Quantity, 0));
-
-      } catch (err) {
-        console.error("fetchCart error:", err);
-        setCartProducts([]);
-        countCart && countCart(0);
-      }
+  async function fetchCart() {
+    try {
+      const res = await api.get(`/cart/${uid}`);
+      const data = res.data;
+      setCartProducts(Array.isArray(data) ? data : []);
+      countCart && countCart(data.reduce((acc, p) => acc + p.Quantity, 0));
+    } catch (err) {
+      console.error("fetchCart error:", err);
+      setCartProducts([]);
+      countCart && countCart(0);
     }
+  }
 
   async function updateQuantity(pid, newQuantity) {
     const product = cartProducts.find(p => p.PID === pid);
@@ -42,11 +39,7 @@ function Cart({ uid, updateCart, syncCart, countCart }) {
     );
 
     try {
-      await fetch("http://localhost:5000/cart/update", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ uid, pid, quantity: newQuantity }),
-      });
+      await api.post("/cart/update", { uid, pid, quantity: newQuantity });
       fetchCart();
     } catch (err) {
       console.error("updateQuantity error:", err);
@@ -56,11 +49,7 @@ function Cart({ uid, updateCart, syncCart, countCart }) {
   async function removeProduct(pid) {
     setCartProducts(prev => prev.filter(p => p.PID !== pid));
     try {
-      await fetch("http://localhost:5000/cart/remove", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ uid, pid }),
-      });
+      await api.post("/cart/remove", { uid, pid });
       syncCart(prev => !prev);
     } catch (err) {
       console.error("removeProduct error:", err);
@@ -69,17 +58,17 @@ function Cart({ uid, updateCart, syncCart, countCart }) {
 
   async function clearCart() {
     try {
-      const res = await fetch(`http://localhost:5000/cart/clear/${uid}`, { method: "DELETE" });
-      const data = await res.json();
+      const res = await api.delete(`/cart/clear/${uid}`);
+      const data = res.data;
 
-      if (!res.ok) {
+      if (!res.status || res.status >= 400) {
         console.error("Failed to clear cart:", data.error);
         return;
       }
 
       console.log(data.message);
-      setCartProducts([]);       
-      syncCart(prev => !prev);   
+      setCartProducts([]);
+      syncCart(prev => !prev);
     } catch (err) {
       console.error("clearCart error:", err);
     }
@@ -90,24 +79,30 @@ function Cart({ uid, updateCart, syncCart, countCart }) {
       <h2>Kundvagn</h2>
       {cartProducts.length > 0 ? (
         <>
-          {cartProducts.map((product, idx) => (
-            <div className="cart-products">
+          {cartProducts.map((product) => (
+            <div className="cart-products" key={product.PID}>
               <button onClick={() => removeProduct(product.PID)}>x</button>
               <div className="cartName">{product.Name}</div>
-              <div className="cartQty"><input type="number" className="cartQtyInput" value={product.Quantity} onChange={e => updateQuantity(product.PID, Number(e.target.value))}/></div>
+              <div className="cartQty">
+                <input
+                  type="number"
+                  className="cartQtyInput"
+                  value={product.Quantity}
+                  onChange={e => updateQuantity(product.PID, Number(e.target.value))}
+                />
+              </div>
               <div className="cartPrice">{Number(product.Price).toFixed(2)} kr</div>
             </div>
           ))}
 
-            <div className="cart-total">
-              {cartProducts.reduce((acc, p) => acc + p.Price * p.Quantity, 0).toFixed(2)} kr
-            </div>
+          <div className="cart-total">
+            {cartProducts.reduce((acc, p) => acc + p.Price * p.Quantity, 0).toFixed(2)} kr
+          </div>
 
           <div className="cart-actions">
             <button className="clear-button" onClick={clearCart}>
               Rensa kundvagn
             </button>
-
             <button className="checkout-button" onClick={checkout}>
               Till kassan
             </button>

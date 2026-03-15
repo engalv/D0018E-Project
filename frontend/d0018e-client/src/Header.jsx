@@ -7,7 +7,6 @@ import { Link, useNavigate } from "react-router-dom";
 function Header({ toggleCart, cartCount, cartOpen, countCart, updateCart, syncCart, closeCart, user, setUser, showCartButton }) {
   const navigate = useNavigate();
 
-  // --- Logout handler ---
   const handleLogout = () => {
     localStorage.removeItem("token");
     setUser(null);                    

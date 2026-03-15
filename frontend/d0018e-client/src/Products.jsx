@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./Products.css";
 import { useParams, Link } from "react-router-dom";
+import api from "./api";
 
 function Products({ uid, syncCart, updateCart, countCart }) {
   const [products, syncProducts] = useState([]);
@@ -8,39 +9,36 @@ function Products({ uid, syncCart, updateCart, countCart }) {
   const { cid } = useParams();
 
   useEffect(() => {
-
-    const url = cid
-      ? `http://localhost:5000/product/category/${cid}`
-      : "http://localhost:5000/product";
-
-    fetch(url)
-      .then(res => res.json())
-      .then(data => {
+    async function fetchProducts() {
+      try {
+        const url = cid ? `/product/category/${cid}` : "/product";
+        const res = await api.get(url);
+        const data = res.data;
         syncProducts(data);
         syncQty(data.reduce((acc, p) => ({ ...acc, [p.PID]: 1 }), {}));
-      })
-      .catch(err => console.error("fetch error:", err));
+      } catch (err) {
+        console.error("fetch error:", err);
+      }
+    }
 
+    fetchProducts();
   }, [updateCart, cid]);
 
-  const buyProduct = (product) => {
+  const buyProduct = async (product) => {
     const quantity = qty[product.PID] || 1;
 
-    fetch("http://localhost:5000/cart/add", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
+    try {
+      const res = await api.post("/cart/add", {
         uid: uid,
         pid: product.PID,
         quantity: quantity
-      })
-    })
-      .then(res => res.json())
-      .then(data => {
-        console.log(data.message);
-        syncCart(prev => !prev);
-        countCart(prev => prev + quantity);
       });
+      console.log(res.data.message);
+      syncCart(prev => !prev);
+      countCart && countCart(prev => prev + quantity);
+    } catch (err) {
+      console.error("Add to cart error:", err);
+    }
   };
 
   return (

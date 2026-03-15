@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import api from "./api";
 
 function UserPage({ uid }) {
   const [orders, setOrders] = useState([]);
@@ -10,31 +11,22 @@ function UserPage({ uid }) {
 
   async function fetchOrders() {
     try {
-      const res = await fetch(`http://localhost:5000/orders/user/${uid}`);
+      const res = await api.get(`/orders/user/${uid}`);
+      const data = res.data;
 
-      if (res.status === 404) {
+      if (!data || data.length === 0) {
         setOrders([]);
         setError("You have no orders.");
         return;
       }
 
-      if (!res.ok) {
-        console.error("Server error:", res.status);
-        setOrders([]);
-        setError("Server error. Please try again later.");
-        return;
-      }
-
-      const data = await res.json();
       setOrders(data);
       setError(null);
-
     } catch (err) {
       console.error("fetchOrders error:", err);
       setOrders([]);
+      setError("Server error. Please try again later.");
     }
-
-    console.log("This is the status", orders.Status)
   }
 
   return (
@@ -42,7 +34,6 @@ function UserPage({ uid }) {
       <h2>My Orders</h2>
 
       {error && <p>{error}</p>}
-      
 
       {orders.length > 0 && orders.map(order => (
         <div
@@ -57,13 +48,14 @@ function UserPage({ uid }) {
             <ul>
               {order.items.map((item, index) => (  
                 <li key={`${order.OID}-${item.PID}-${index}`}>
-                {item.Amount} x {item.Product_Name} ({Number(item.Price).toFixed(2)} kr)
+                  {item.Amount} x {item.Product_Name} ({Number(item.Price).toFixed(2)} kr)
                 </li>
               ))}
             </ul>
           )}
         </div>
       ))}
+
       {!error && orders.length === 0 && <p>You have no orders.</p>}
     </div>
   );

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
+import api from "./api";
 
 function ProductPage({ uid, syncCart, user }) {
   const { pid } = useParams();
@@ -13,13 +14,12 @@ function ProductPage({ uid, syncCart, user }) {
   const [editInfo, setEditInfo] = useState({ Name: "", Price: "", Description: "", CID: "" });
 
   const isAdmin = user?.Is_Admin;
-  const token = localStorage.getItem("token"); // Grab JWT from localStorage
 
-  // Fetch product info
   useEffect(() => {
-    fetch(`http://localhost:5000/product/${pid}`)
-      .then(res => res.json())
-      .then(data => {
+    async function fetchProduct() {
+      try {
+        const res = await api.get(`/product/${pid}`);
+        const data = res.data;
         setProduct(data);
         setStock(data.Stock);
         setEditInfo({
@@ -28,42 +28,39 @@ function ProductPage({ uid, syncCart, user }) {
           Description: data.Description,
           CID: data.CID
         });
-      })
-      .catch(err => console.error("Error fetching product:", err));
+      } catch (err) {
+        console.error("Error fetching product:", err);
+      }
+    }
+    fetchProduct();
   }, [pid]);
 
-  // Fetch reviews
   useEffect(() => {
-    fetch(`http://localhost:5000/product/${pid}/reviews`)
-      .then(res => res.json())
-      .then(data => setReviews(data))
-      .catch(err => console.error("Error fetching reviews:", err));
+    async function fetchReviews() {
+      try {
+        const res = await api.get(`/product/${pid}/reviews`);
+        setReviews(res.data);
+      } catch (err) {
+        console.error("Error fetching reviews:", err);
+      }
+    }
+    fetchReviews();
   }, [pid]);
 
-  // Buy product
   const buyProduct = async () => {
     try {
-      await fetch("http://localhost:5000/cart/add", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ uid, pid: product.PID, quantity })
-      });
+      await api.post("/cart/add", { uid, pid: product.PID, quantity });
       syncCart(prev => !prev);
     } catch (err) {
       console.error("Add to cart error:", err);
     }
   };
 
-  // Submit review
   const submitReview = async () => {
     try {
-      await fetch("http://localhost:5000/product/review", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ uid, pid: product.PID, rating, comment })
-      });
-      const updatedReviews = await fetch(`http://localhost:5000/product/${pid}/reviews`).then(r => r.json());
-      setReviews(updatedReviews);
+      await api.post("/product/review", { uid, pid: product.PID, rating, comment });
+      const res = await api.get(`/product/${pid}/reviews`);
+      setReviews(res.data);
       setComment("");
       setRating(5);
     } catch (err) {
@@ -71,19 +68,9 @@ function ProductPage({ uid, syncCart, user }) {
     }
   };
 
-  // Admin: update stock
   const handleStockUpdate = async () => {
-    if (!token) return alert("Admin token missing. Please login again.");
-
     try {
-      await fetch(`http://localhost:5000/product/admin/product/${product.PID}/stock`, {
-        method: "PUT",
-        headers: { 
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
-        },
-        body: JSON.stringify({ Stock: parseInt(stock, 10) })
-      });
+      await api.put(`/product/admin/product/${product.PID}/stock`, { Stock: parseInt(stock, 10) });
       alert("Stock updated!");
       setProduct(prev => ({ ...prev, Stock: parseInt(stock, 10) }));
     } catch (err) {
@@ -92,19 +79,9 @@ function ProductPage({ uid, syncCart, user }) {
     }
   };
 
-  // Admin: update general product info
   const handleInfoUpdate = async () => {
-    if (!token) return alert("Admin token missing. Please login again.");
-
     try {
-      await fetch(`http://localhost:5000/product/admin/product/${product.PID}`, {
-        method: "PUT",
-        headers: { 
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
-        },
-        body: JSON.stringify(editInfo)
-      });
+      await api.put(`/product/admin/product/${product.PID}`, editInfo);
       alert("Product info updated!");
       setProduct(prev => ({ ...prev, ...editInfo }));
     } catch (err) {
@@ -113,16 +90,11 @@ function ProductPage({ uid, syncCart, user }) {
     }
   };
 
-  // Admin: delete review
   const handleDeleteReview = async (rid) => {
     if (!window.confirm("Are you sure you want to delete this review?")) return;
-    if (!token) return alert("Admin token missing. Please login again.");
 
     try {
-      await fetch(`http://localhost:5000/product/admin/review/${rid}`, {
-        method: "DELETE",
-        headers: { "Authorization": `Bearer ${token}` }
-      });
+      await api.delete(`/product/admin/review/${rid}`);
       setReviews(prev => prev.filter(r => r.RID !== rid));
     } catch (err) {
       console.error("Failed to delete review", err);

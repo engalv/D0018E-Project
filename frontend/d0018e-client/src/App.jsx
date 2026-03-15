@@ -10,9 +10,10 @@ import LoginForm from "./LoginForm.jsx";
 import RegistrationForm from "./RegistrationForm.jsx";
 import UserPage from "./UserPage.jsx";
 import CategoryBox from "./CategoryBox.jsx";
-import AdminPage from "./AdminPage.jsx"
+import AdminPage from "./AdminPage.jsx";
 import UserProfile from "./UserProfile.jsx";
 
+import api from "./api"; 
 import "./App.css";
 
 // decodeJWT did not want to work as an import for some reason
@@ -37,6 +38,7 @@ function App() {
   const location = useLocation();
   const showCartButton = location.pathname !== "/checkout";
 
+  // Auth check when loading
   useEffect(() => {
     const token = localStorage.getItem("token");
     console.log("Token on load:", token);
@@ -63,9 +65,10 @@ function App() {
     if (!user) return;
 
     console.log("Fetching cart for user:", user.UID);
-    fetch(`http://localhost:5000/cart/${user.UID}`)
-      .then((res) => res.json())
-      .then((data) => {
+
+    api.get(`/cart/${user.UID}`)
+      .then((res) => {
+        const data = res.data; 
         const totalQty = data.reduce((acc, p) => acc + p.Quantity, 0);
         console.log("Cart total quantity:", totalQty);
         countCart(totalQty);
@@ -133,24 +136,24 @@ function App() {
           />
           <Route
             path="/checkout"
-            element={user ? <Checkout uid={user.UID} syncCart={syncCart} /> : <Navigate to="/login" />}
+            element={user ? <Checkout uid={user.UID} syncCart={syncCart} api={api} /> : <Navigate to="/login" />}
           />
           <Route
             path="/product/:pid"
-            element={user ? <ProductPage uid={user.UID} syncCart={syncCart} user={user} /> : <Navigate to="/login" />}
+            element={user ? <ProductPage uid={user.UID} syncCart={syncCart} user={user} api={api} /> : <Navigate to="/login" />}
           />
           <Route
             path="/user"
-            element={user ? <UserPage uid={user.UID} /> : <Navigate to="/login" />}
+            element={user ? <UserPage uid={user.UID} api={api} /> : <Navigate to="/login" />}
           />
           <Route
             path="/admin"
-            element={user?.Is_Admin ? <AdminPage user={user} /> : <Navigate to="/" />}
+            element={user?.Is_Admin ? <AdminPage user={user} api={api} /> : <Navigate to="/" />}
           />
 
           <Route
             path="/profile"
-            element={user ? <UserProfile /> : <Navigate to="/login" />}
+            element={user ? <UserProfile api={api} /> : <Navigate to="/login" />}
           />
 
           {/* Fallback */}
