@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import api from "./api";
+import { Link } from "react-router-dom"
 
 function UserProfile() {
   const [profile, setProfile] = useState(null);
@@ -85,6 +86,12 @@ function UserProfile() {
     <div style={{ padding: "20px" }}>
       <p><b>{profile.Name}</b></p>
       <p><b>Email:</b> {profile.Email}</p>
+
+        <p>
+        <Link to="/user" className="nav-button">
+          Orderhistorik
+        </Link>
+      </p>
 
       {!editing && (
         <button onClick={() => setEditing(true)}>Ändra användarinformation</button>
