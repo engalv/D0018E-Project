@@ -61,7 +61,7 @@ function Products({ uid, syncCart, updateCart, countCart }) {
               {p.Stock > 0 ? `${p.Stock}` : "Slut i lager"} st
             </div>
 
-            <div className="product-price">£{p.Price}</div>
+            <div className="product-price">{Number(p.Price).toFixed(2)} kr</div>
 
             <button
               className="buy-btn"

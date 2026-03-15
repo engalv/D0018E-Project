@@ -1,15 +1,43 @@
 .checkout-container {
-  max-width: 1280px;
-  margin: 100px;
-  background: white;
+  max-width: 600px;
+  margin: auto; 
+  background: rgb(239, 237, 237);
 }
 
 .checkout-product {
   padding: 10px;
+  display: flex;
+  align-items: center;
 }
 
 .checkout-button {
   background: green;
+  width:100px;
   border: none;
   cursor: pointer;
+}
+
+.checkoutName {
+  font-weight: bold;
+  font-size: 12px;
+  width: 400px;
+  text-align:left;
+}
+
+.checkoutQty {
+  font-size: 12px;
+  width: 80px;
+}
+
+.checkoutPrice {
+  font-size: 12px;
+  width: 100px;
+  text-align:right;
+  margin-right:32px;
+}
+
+.checkoutTotalPrice {
+  text-align:right;
+  margin-right:20px;
+  font-weight:bold;
 }

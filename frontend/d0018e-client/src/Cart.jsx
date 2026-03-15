@@ -1,11 +1,20 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import "./Cart.css"
+
 
 function Cart({ uid, updateCart, syncCart, countCart }) {
   const [cartProducts, setCartProducts] = useState([]);
+  const navigate = useNavigate(); 
 
   useEffect(() => {
     fetchCart();
   }, [uid, updateCart]);
+
+  
+  const checkout = () => {
+    navigate("/checkout");
+  };
 
     async function fetchCart() {
       try {
@@ -45,82 +54,66 @@ function Cart({ uid, updateCart, syncCart, countCart }) {
   }
 
   async function removeProduct(pid) {
+    setCartProducts(prev => prev.filter(p => p.PID !== pid));
     try {
       await fetch("http://localhost:5000/cart/remove", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ uid, pid }),
       });
-      fetchCart();
+      syncCart(prev => !prev);
     } catch (err) {
       console.error("removeProduct error:", err);
     }
   }
 
-  async function checkout() {
+  async function clearCart() {
     try {
-      await fetch("http://localhost:5000/cart/checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ uid }),
-      });
-      setCartProducts([]);
-      syncCart(prev => !prev);
+      const res = await fetch(`http://localhost:5000/cart/clear/${uid}`, { method: "DELETE" });
+      const data = await res.json();
+
+      if (!res.ok) {
+        console.error("Failed to clear cart:", data.error);
+        return;
+      }
+
+      console.log(data.message);
+      setCartProducts([]);       
+      syncCart(prev => !prev);   
     } catch (err) {
-      console.error("checkout error:", err);
+      console.error("clearCart error:", err);
     }
   }
-
-async function clearCart() {
-  try {
-    const res = await fetch(`http://localhost:5000/cart/clear/${uid}`, { method: "DELETE" });
-    const data = await res.json();
-
-    if (!res.ok) {
-      console.error("Failed to clear cart:", data.error);
-      return;
-    }
-
-    console.log(data.message);
-    setCartProducts([]);       
-    syncCart(prev => !prev);   
-  } catch (err) {
-    console.error("clearCart error:", err);
-  }
-}
 
   return (
-    <div style={{ border: "1px solid #aaa", padding: "10px", marginTop: "20px" }}>
+    <div className="cart-box"> 
       <h2>Kundvagn</h2>
-      {Array.isArray(cartProducts) && cartProducts.length > 0 ? (
+      {cartProducts.length > 0 ? (
         <>
           {cartProducts.map((product, idx) => (
-            <div key={idx} style={{ marginBottom: "10px" }}>
-              <b>{product.Name}</b>
-              <p>Pris: £{product.Price}</p>
-              <input
-                type="number"
-                min={1}
-                value={product.Quantity}
-                onChange={e => updateQuantity(product.PID, Number(e.target.value))}
-              />
-              <p>Summa: £{(product.Price * product.Quantity).toFixed(2)}</p>           
-              <button onClick={() => removeProduct(product.PID)}>-</button>
+            <div className="cart-products">
+              <button onClick={() => removeProduct(product.PID)}>x</button>
+              <div className="cartName">{product.Name}</div>
+              <div className="cartQty"><input type="number" className="cartQtyInput" value={product.Quantity} onChange={e => updateQuantity(product.PID, Number(e.target.value))}/></div>
+              <div className="cartPrice">{Number(product.Price).toFixed(2)} kr</div>
             </div>
           ))}
 
-          <h3>
-            Pris totalt: £
-            {cartProducts.reduce((acc, p) => acc + p.Price * p.Quantity, 0).toFixed(2)}
-          </h3>
+            <div className="cart-total">
+              {cartProducts.reduce((acc, p) => acc + p.Price * p.Quantity, 0).toFixed(2)} kr
+            </div>
 
-          <button onClick={clearCart}>
-            Rensa kundvagn
-          </button>
+          <div className="cart-actions">
+            <button className="clear-button" onClick={clearCart}>
+              Rensa kundvagn
+            </button>
+
+            <button className="checkout-button" onClick={checkout}>
+              Till kassan
+            </button>
+          </div>
         </>
-      ) : (
-        <p>-</p>
-      )}
+      ) : <p>-</p>}
     </div>
   );
 }

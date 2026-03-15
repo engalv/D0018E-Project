@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 
 import Header from "./Header";
 import Products from "./Products.jsx";
 import ProductPage from "./ProductPage.jsx";
-import CartBox from "./CartBox.jsx";
+import Cart from "./Cart.jsx";
 import Checkout from "./Checkout.jsx";
 import LoginForm from "./LoginForm.jsx";
 import RegistrationForm from "./RegistrationForm.jsx";
@@ -34,6 +34,8 @@ function App() {
   const [updateCart, syncCart] = useState(false);
   const [cartOpen, openCart] = useState(false);
   const [cartCount, countCart] = useState(0);
+  const location = useLocation();
+  const showCartButton = location.pathname !== "/checkout";
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -82,7 +84,7 @@ function App() {
           uid={user.UID}
           updateCart={updateCart}
           syncCart={syncCart}
-          countCart={cartCount}
+          countCart={countCart}
         />
       </div>
     );
@@ -103,6 +105,7 @@ function App() {
         updateCart={updateCart}
         syncCart={syncCart}
         closeCart={() => openCart(false)}
+        showCartButton={showCartButton}
       />
 
       <CategoryBox />
