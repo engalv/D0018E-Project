@@ -50,14 +50,14 @@ function UserPage({ uid }) {
           style={{ border: "1px solid #ccc", marginBottom: "10px", padding: "10px" }}
         >
           <b>Order #{order.OID} — {order.Status}</b><br />
-          Placed on: {new Date(order.Creation_Time).toLocaleDateString()}<br />
-          Total: £{Number(order.Price || 0).toFixed(2)}
+          Datum: {new Date(order.Creation_Time).toLocaleDateString()}<br />
+          Kostnad: {Number(order.Price || 0).toFixed(2)} kr
 
           {order.items && order.items.length > 0 && (
             <ul>
-              {order.items.map(item => (  
-                <li key={item.id}>
-                  {item.Product_Name} x {item.Amount} (£{item.Price} each)
+              {order.items.map((item, index) => (  
+                <li key={`${order.OID}-${item.PID}-${index}`}>
+                {item.Amount} x {item.Product_Name} ({Number(item.Price).toFixed(2)} kr)
                 </li>
               ))}
             </ul>

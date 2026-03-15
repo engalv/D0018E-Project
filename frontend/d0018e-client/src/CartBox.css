@@ -1,8 +1,8 @@
-.cart-box {
+/* .cart-box {
   position: absolute;
   top: 100%;
   right: 0;
-  width: 350px;
+  width: 950px;
   background: white;
   border: 1px solid #ccc;
   padding: 10px;
@@ -14,11 +14,10 @@
 }
 
 .checkout-button {
-  width: 100%;
+  width:5px;
   background: green;
   color: white;
-  padding: 6px 12px;
   margin-top: 5px;
   border: none;
   cursor: pointer;
-}
+} */

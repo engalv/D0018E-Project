@@ -21,7 +21,7 @@
 }
 
 .product-row:nth-child(odd) {
-  background-color: white;
+  background-color: rgb(255, 255, 255);
 }
 
 .product-row:nth-child(even) {

@@ -1,10 +1,10 @@
 import React from "react";
-import CartBox from "./CartBox";
+import Cart from "./Cart";
 import "./Header.css";
 import Kungen from "../images/CDKungen.png";
 import { Link, useNavigate } from "react-router-dom";
 
-function Header({ toggleCart, cartCount, cartOpen, countCart, updateCart, syncCart, closeCart, user, setUser }) {
+function Header({ toggleCart, cartCount, cartOpen, countCart, updateCart, syncCart, closeCart, user, setUser, showCartButton }) {
   const navigate = useNavigate();
 
   // --- Logout handler ---
@@ -53,23 +53,24 @@ function Header({ toggleCart, cartCount, cartOpen, countCart, updateCart, syncCa
 
         <Link to="/profile" className="nav-button">Profil</Link>
 
-        <div className="cart-container">
-          <button className="cart-button" onClick={toggleCart}>
-            Kundvagn
-            {cartCount > 0 && <span className="cart-counter">{cartCount}</span>}
-          </button>
+          {showCartButton && (
+            <div className="cart-container">
+              <button className="cart-button" onClick={toggleCart}>
+                Kundvagn
+                {cartCount > 0 && <span className="cart-counter">{cartCount}</span>}
+              </button>
 
-          {cartOpen && user && (
-            <CartBox
-              uid={user.UID}
-              updateCart={updateCart}
-              syncCart={syncCart}
-              countCart={countCart}
-              closeCart={closeCart}
-            />
+              {cartOpen && user && (
+                <Cart
+                  uid={user.UID}
+                  updateCart={updateCart}
+                  syncCart={syncCart}
+                  countCart={countCart}
+                  closeCart={closeCart}
+                />
+              )}
+            </div>
           )}
-        </div>
-
       </div>
     </header>
   );
