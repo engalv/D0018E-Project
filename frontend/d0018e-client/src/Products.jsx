@@ -2,6 +2,9 @@ import React, { useState, useEffect } from "react";
 import "./Products.css";
 import { useParams, Link } from "react-router-dom";
 import api from "./api";
+import Banner from "./Banner";
+import { ShoppingCart, X } from "lucide-react";
+
 
 function Products({ uid, syncCart, updateCart, countCart }) {
   const [products, syncProducts] = useState([]);
@@ -43,9 +46,8 @@ function Products({ uid, syncCart, updateCart, countCart }) {
 
   return (
     <div className="products-container">
-      <div className="textfont">
-        Produkter
-      </div>
+      <Banner imageUrl="/images/reklam.gif" productId={4} />
+      <div className="textfont"> Produkter </div>
 
       <div className="products-list">
         {products.map(p => (
@@ -62,11 +64,11 @@ function Products({ uid, syncCart, updateCart, countCart }) {
             <div className="product-price">{Number(p.Price).toFixed(2)} kr</div>
 
             <button
-              className="buy-btn"
+              className={`buy-btn ${p.Stock > 0 ? "inStock" : "outStock"}`}
               onClick={() => buyProduct(p)}
               disabled={p.Stock <= 0}
             >
-              {p.Stock > 0 ? "Lägg i kundvagn" : "Slut i lagret"}
+              {p.Stock > 0 ? <ShoppingCart size={24} /> : <X size={24} />}
             </button>
           </div>
         ))}

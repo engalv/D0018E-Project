@@ -3,6 +3,7 @@ import Cart from "./Cart";
 import "./Header.css";
 import Kungen from "../images/CDKungen.png";
 import { Link, useNavigate } from "react-router-dom";
+import { User } from "lucide-react";
 
 function Header({ toggleCart, cartCount, cartOpen, countCart, updateCart, syncCart, closeCart, user, setUser, showCartButton }) {
   const navigate = useNavigate();
@@ -38,6 +39,7 @@ function Header({ toggleCart, cartCount, cartOpen, countCart, updateCart, syncCa
           </nav>
         </div>
 
+      <div className="header-right">
         <div className="login-container">
           {!user ? (
             <button className="login-button">
@@ -50,8 +52,7 @@ function Header({ toggleCart, cartCount, cartOpen, countCart, updateCart, syncCa
           )}
         </div>
 
-        <Link to="/profile" className="nav-button">Profil</Link>
-
+          <div className="profileButton"><Link to="/profile" className="nav-button"> <User size={28} /> </Link></div>
           {showCartButton && (
             <div className="cart-container">
               <button className="cart-button" onClick={toggleCart}>
@@ -70,6 +71,7 @@ function Header({ toggleCart, cartCount, cartOpen, countCart, updateCart, syncCa
               )}
             </div>
           )}
+      </div>
       </div>
     </header>
   );
