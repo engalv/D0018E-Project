@@ -26,13 +26,10 @@ function Header({ toggleCart, cartCount, cartOpen, countCart, updateCart, syncCa
           <h1>CDKUNGEN.SE</h1>          
 
           <nav className="navbar">
-
-            {/* Admin button */}
             {user?.Is_Admin === 1 && (
               <button
                 className="nav-button admin-button"
-                onClick={() => navigate("/admin")}
-              >
+                onClick={() => navigate("/admin")}>
                 Admin
               </button>
             )}

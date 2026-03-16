@@ -16,7 +16,7 @@ function Orders({ uid }) {
 
       if (!data || data.length === 0) {
         setOrders([]);
-        setError("You have no orders.");
+        setError("Du har inga beställningar.");
         return;
       }
 
@@ -25,7 +25,7 @@ function Orders({ uid }) {
     } catch (err) {
       console.error("fetchOrders error:", err);
       setOrders([]);
-      setError("Server error. Please try again later.");
+      setError("Server error, försök igen senare.");
     }
   }
 

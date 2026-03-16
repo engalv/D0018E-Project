@@ -60,7 +60,7 @@ function App() {
     setAuthChecked(true);
   }, []);
 
-  // --- Fetch cart when user or updateCart changes ---
+  // Fetch cart when user or updateCart change
   useEffect(() => {
     if (!user) return;
 
@@ -76,7 +76,7 @@ function App() {
       .catch((err) => console.error("Error fetching cart:", err));
   }, [user, updateCart]);
 
-  // --- Product view component ---
+  // The Productview
   const ProductView = () => {
     if (!authChecked) return <p>Loading...</p>;
     if (!user) return <Navigate to="/login" />;
@@ -93,7 +93,6 @@ function App() {
     );
   };
 
-  // --- Wait for auth check before rendering ---
   if (!authChecked) return <p>Loading...</p>;
 
   return (
@@ -115,7 +114,7 @@ function App() {
 
       <div className="main-content">
         <Routes>
-          {/* Public routes */}
+          {/* Public routes, if user is not logged in they can go to register or login */}
           <Route
             path="/login"
             element={!user ? <LoginForm setUser={setUser} /> : <Navigate to="/" />}

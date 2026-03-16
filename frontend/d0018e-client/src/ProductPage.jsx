@@ -108,7 +108,7 @@ function ProductPage({ uid, syncCart, user }) {
   const averageRating = reviews.length > 0 ? 
     (reviews.reduce((sum, r) => sum + r.Rating, 0) / reviews.length).toFixed(2) : null;
 
-  if (!product) return <p>Laddar in produkt...</p>;
+  if (!product) return <p>Laddar in produkten...</p>;
 
   return (
     <div className="productspage">

@@ -16,7 +16,7 @@ function RegistrationForm() {
     try {
       const res = await api.post("/register", { name, email, password });
 
-      setMessage(res.data.message || "Registration successful");
+      setMessage(res.data.message || "Registrering klar!");
       setIsError(false);
 
       setName("");
@@ -25,7 +25,7 @@ function RegistrationForm() {
 
     } catch (err) {
       const errorMessage =
-        err.response?.data?.error || "Registration failed";
+        err.response?.data?.error || "Registring misslyckades.";
 
       setMessage(errorMessage);
       setIsError(true);
@@ -40,7 +40,7 @@ function RegistrationForm() {
 
       <input
         type="text"
-        placeholder="Name"
+        placeholder="Namn"
         value={name}
         onChange={(e) => setName(e.target.value)}
         required
@@ -56,7 +56,7 @@ function RegistrationForm() {
 
       <input
         type="password"
-        placeholder="Password"
+        placeholder="Lösenord"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
         required

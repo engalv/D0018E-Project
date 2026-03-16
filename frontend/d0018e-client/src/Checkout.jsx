@@ -8,7 +8,7 @@ function Checkout({ uid, syncCart }) {
   useEffect(() => {
     fetchCart();
   }, [uid]);
-  // Fetch the cart that belongs to the user.
+  // Fetch the users cart.
   async function fetchCart() {
     try {
       const res = await api.get(`/cart/${uid}`);

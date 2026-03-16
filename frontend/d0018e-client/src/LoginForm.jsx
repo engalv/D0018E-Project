@@ -10,6 +10,7 @@ function LoginForm({ setUser }) {
 
   const navigate = useNavigate(); 
 
+  // jsonwebtoken gotten from server is stores in localStorage, is used to keep the user logged in upon refresh
   const handleLogin = async (e) => {
     e.preventDefault();
     setMessage("");
@@ -18,7 +19,7 @@ function LoginForm({ setUser }) {
     try {
       const res = await api.post("/login", { email, password });
 
-      setMessage("Login successful!");
+      setMessage("Loggade in!");
       setIsError(false);
 
       console.log("Logged in user:", res.data.user);
@@ -29,7 +30,7 @@ function LoginForm({ setUser }) {
       navigate("/");
 
     } catch (err) {
-      const errorMessage = err.response?.data?.error || "Login failed";
+      const errorMessage = err.response?.data?.error || "Kunde inte logga in";
       setMessage(errorMessage);
       setIsError(true);
     }
@@ -49,7 +50,7 @@ function LoginForm({ setUser }) {
         />
         <input
           type="password"
-          placeholder="Password"
+          placeholder="Lösenord"
           value={password}
           onChange={e => setPassword(e.target.value)}
           required

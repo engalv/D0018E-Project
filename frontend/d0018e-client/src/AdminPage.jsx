@@ -88,7 +88,7 @@ function AdminPage({ user }) {
     <div className="admin-container">
       {/*Users */}
       <div className="user-column">
-        <h3>Users</h3>
+        <h3>Användare</h3>
         <ul className="user-list">
           {users?.map(u => (
             <li
@@ -102,7 +102,7 @@ function AdminPage({ user }) {
         </ul>
       </div>
 
-      {/*Orders*/}
+      {/* Orders, middlecolumn */}
       <div className="order-column">
         <h3>Beställningar</h3>
         {selectedUser ? (
@@ -148,7 +148,7 @@ function AdminPage({ user }) {
         )}
       </div>
 
-      {/* Products */}
+      {/* Products column, shows all products and here you can add more products */}
       <div className="product-column">
         <h3>Add Product</h3>
           <form className="add-product-form" onSubmit={handleAddProduct}>
@@ -162,39 +162,39 @@ function AdminPage({ user }) {
             <input
               type="number"
               step="0.01"
-              placeholder="Price"
+              placeholder="Pris"
               value={newProduct.Price}
               onChange={e => setNewProduct({ ...newProduct, Price: e.target.value })}
               required
             />
             <input
               type="number"
-              placeholder="Stock"
+              placeholder="Antal"
               value={newProduct.Stock}
               onChange={e => setNewProduct({ ...newProduct, Stock: e.target.value })}
             />
             <input
               type="text"
-              placeholder="Description"
+              placeholder="Beskrivning"
               value={newProduct.Description || ""}
               onChange={e => setNewProduct({ ...newProduct, Description: e.target.value })}
             />
             <input
               type="text"
-              placeholder="Cover Image URL"
+              placeholder="Bild Filnamn"
               value={newProduct.Cover_Image || ""}
               onChange={e => setNewProduct({ ...newProduct, Cover_Image: e.target.value })}
             />
             <input
               type="text"
-              placeholder="Category ID"
+              placeholder="Kategori ID"
               value={newProduct.CID || ""}
               onChange={e => setNewProduct({ ...newProduct, CID: e.target.value })}
             />
-            <button type="submit">Add Product</button>
+            <button type="submit">Lägg till produkt</button>
           </form>
 
-        <h3>Products</h3>
+        <h3>Produkter</h3>
         <ul className="product-list">
           {products?.map(p => (
             <li
