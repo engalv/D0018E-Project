@@ -72,7 +72,7 @@ function Products({ uid, syncCart, updateCart, countCart }) {
             </button>
           </div>
         ))}
-         <Banner imageUrl="/images/reklam2.gif" productId={2} />
+         <Banner imageUrl="/images/reklam2.png" productId={2} />
       </div>
     </div>
   );
