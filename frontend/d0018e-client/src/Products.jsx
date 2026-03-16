@@ -72,9 +72,11 @@ function Products({ uid, syncCart, updateCart, countCart }) {
             </button>
           </div>
         ))}
+         <Banner imageUrl="/images/reklam2.gif" productId={2} />
       </div>
     </div>
   );
+  
 }
 
 export default Products;
