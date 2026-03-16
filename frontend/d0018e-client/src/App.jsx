@@ -143,8 +143,8 @@ function App() {
             element={user ? <ProductPage uid={user.UID} syncCart={syncCart} user={user} api={api} /> : <Navigate to="/login" />}
           />
           <Route
-            path="/user"
-            element={user ? <UserPage uid={user.UID} api={api} /> : <Navigate to="/login" />}
+            path="/orders"
+            element={user ? <Orders uid={user.UID} api={api} /> : <Navigate to="/login" />}
           />
           <Route
             path="/admin"

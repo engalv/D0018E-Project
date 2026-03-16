@@ -88,7 +88,7 @@ function UserProfile() {
       <p><b>Email:</b> {profile.Email}</p>
 
         <p>
-        <Link to="/user" className="nav-button">
+        <Link to="/orders" className="nav-button">
           Orderhistorik
         </Link>
       </p>
