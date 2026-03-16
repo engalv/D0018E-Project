@@ -8,7 +8,7 @@ import Cart from "./Cart.jsx";
 import Checkout from "./Checkout.jsx";
 import LoginForm from "./LoginForm.jsx";
 import RegistrationForm from "./RegistrationForm.jsx";
-import UserPage from "./UserPage.jsx";
+import Orders from "./Orders.jsx";
 import CategoryBox from "./CategoryBox.jsx";
 import AdminPage from "./AdminPage.jsx";
 import UserProfile from "./UserProfile.jsx";
