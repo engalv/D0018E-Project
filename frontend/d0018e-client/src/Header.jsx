@@ -3,7 +3,7 @@ import Cart from "./Cart";
 import "./Header.css";
 import Kungen from "../images/CDKungen.png";
 import { Link, useNavigate } from "react-router-dom";
-import { User } from "lucide-react";
+import { User, LogOut, LogIn } from "lucide-react";
 
 function Header({ toggleCart, cartCount, cartOpen, countCart, updateCart, syncCart, closeCart, user, setUser, showCartButton }) {
   const navigate = useNavigate();
@@ -43,11 +43,11 @@ function Header({ toggleCart, cartCount, cartOpen, countCart, updateCart, syncCa
         <div className="login-container">
           {!user ? (
             <button className="login-button">
-              <Link to="/login">Logga in</Link>
+              <Link to="/login"><LogIn size={24}/></Link>
             </button>
           ) : (
-            <button className="login-button" onClick={handleLogout}>
-              Logga ut
+            <button className="logout-button" onClick={handleLogout}>
+              <LogOut size={24}/>
             </button>
           )}
         </div>

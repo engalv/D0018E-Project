@@ -21,10 +21,6 @@
     font-weight: bold;
 }
 
-.cartQty {
-    
-}
-
 .cart-actions {
     display: flex;
     gap: 10px; 
