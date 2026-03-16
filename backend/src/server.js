@@ -5,8 +5,7 @@ require('dotenv').config();
 const authRoutes = require("./routes/authRoutes");
 const cartRoutes = require("./routes/cartRoutes");
 const productRoutes = require("./routes/productRoutes");
-const orderRoutes = require("./routes/orderRoutes")
-const checkoutRoutes = require("./routes/checkoutRoutes");
+const orderRoutes = require("./routes/orderRoutes"));
 const adminRoutes = require("./routes/adminRoutes")
 const profileRoutes = require("./routes/profileRoutes");
 
@@ -21,7 +20,6 @@ app.use("/", authRoutes);
 app.use("/cart", cartRoutes);
 app.use("/product", productRoutes);
 app.use("/orders", orderRoutes)
-app.use("/checkout", checkoutRoutes);
 app.use("/admin", adminRoutes)
 app.use("/profile", profileRoutes);
 
