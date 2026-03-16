@@ -1,6 +1,5 @@
 .products-container {
   font-size: 20px;
-  margin-top: 60px;
   margin-bottom: 20px;
 }
 
@@ -21,19 +20,17 @@
 }
 
 .product-row:nth-child(odd) {
-  background-color: rgb(255, 255, 255);
+  background-color: #ededed;
 }
 
 .product-row:nth-child(even) {
-  background-color: #ededed;
+  background-color: rgb(255, 255, 255);
 }
 
 .product-image {
     width: 80px;
     height: 80px;
     object-fit: cover;
-    border-radius: 6px;
-    font-size: 12px;
 }
 
 .product-name {
@@ -55,14 +52,24 @@
 }
 
 .buy-btn {
-  background-color: #00aa17;
+  color:white;
+  height:30px;
+  width:70px;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  margin-right:20px;
+}
+
+.buy-btn.inStock {
+  background-color: green;
   color: white;
-  height: 30px;
-  font-size: 10px;
-  margin-right: 50px;
-  min-width: 120px;
-  font-weight:bold;
-  white-space: nowrap;
+}
+
+.buy-btn.outStock {
+  background-color: red;
+  color: white;
 }
 
 .textfont {
@@ -70,4 +77,5 @@
   padding-top:10px;
   padding-bottom: 10px;
   font-weight: bold;
+  background-color: rgb(223, 223, 223);
 }
