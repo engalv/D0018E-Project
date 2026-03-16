@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import api from "./api";
 import { Link } from "react-router-dom"
+import "./UserProfile.css"
 
 function UserProfile() {
   const [profile, setProfile] = useState(null);
@@ -39,7 +40,7 @@ function UserProfile() {
       setNewEmail("");
     } catch (err) {
       console.error("updateEmail error:", err);
-      setEmailMessage("Server error. Please try again later.");
+      setEmailMessage("Server error. Försök igen senare.");
     }
   }
 
@@ -56,7 +57,7 @@ function UserProfile() {
       setNewName("");
     } catch (err) {
       console.error("updateName error:", err);
-      setNameMessage("Server error. Please try again later.");
+      setNameMessage("Server error. Försök igen senare.");
     }
   }
 
@@ -76,14 +77,14 @@ function UserProfile() {
       setNewPassword("");
     } catch (err) {
       console.error("updatePassword error:", err);
-      setPasswordMessage("Server error. Please try again later.");
+      setPasswordMessage("Server error. Försök igen senare.");
     }
   }
 
-  if (!profile) return <p>Loading...</p>;
+  if (!profile) return <p>Hämtar profil...</p>;
 
   return (
-    <div style={{ padding: "20px" }}>
+    <div>
       <p><b>{profile.Name}</b></p>
       <p><b>Email:</b> {profile.Email}</p>
 
@@ -99,7 +100,9 @@ function UserProfile() {
 
       {editing && (
         <>
-          <h3>Ändra användarnamn</h3>
+          <div className="editCustomerInfo">
+            Ändra användarnamn
+          </div>
           {nameMessage && <p className="profile-message">{nameMessage}</p>}
           <form onSubmit={updateName}>
             <input
@@ -111,7 +114,9 @@ function UserProfile() {
             <button type="submit">✓</button>
           </form>
 
-          <h3>Ändra mejladress</h3>
+          <div className="editCustomerInfo">
+            Ändra mejladress
+          </div>
           {emailMessage && <p className="profile-message">{emailMessage}</p>}
           <form onSubmit={updateEmail}>
             <input
@@ -123,7 +128,9 @@ function UserProfile() {
             <button type="submit">✓</button>
           </form>
 
-          <h3>Ändra lösenord</h3>
+          <div className="editCustomerInfo">
+            Ändra lösenord
+          </div>
           {passwordMessage && <p className="profile-message">{passwordMessage}</p>}
           <form onSubmit={updatePassword}>
             <input

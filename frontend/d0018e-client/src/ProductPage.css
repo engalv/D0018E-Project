@@ -1,0 +1,61 @@
+.editProductInfo {
+    height:30px;
+}
+
+.editProduct label {
+    display: block;
+    margin-bottom:10px;
+}
+
+.categoryBtn{
+    width:40px;
+}
+
+.priceBtn{
+    width:100px;
+}
+
+.nameBtn{
+    width:400px;
+}
+
+.productspage{
+}
+
+.cartBtn{
+    color:white;
+    background-color: green;
+    height:30px;
+    width:130px;
+    font-size:12px;
+}
+
+.qtyCart{   
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap:20px;
+}
+
+.imgProduct {
+    height:300px;
+    width:300px;
+}
+
+.productInfo {
+
+}
+
+.trashBtn {
+    color:white;
+    background-color: red;
+    height:30px;
+    width:40px;
+    border: none;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    border-radius:2px;
+    margin-left:20px;
+    padding:0;
+}
