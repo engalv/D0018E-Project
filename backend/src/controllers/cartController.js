@@ -1,5 +1,6 @@
 const conn = require("../database");
 
+// Returns the cart
 exports.getCart = async (req, res) => {
   const uid = req.params.uid;
 

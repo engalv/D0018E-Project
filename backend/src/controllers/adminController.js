@@ -1,5 +1,6 @@
 const conn = require("../database");
 
+// Is not used anymore
 exports.getAllOrders = async (req, res) => {
   if (!req.user?.Is_Admin) return res.status(403).json({ error: "Forbidden" });
 
@@ -7,6 +8,7 @@ exports.getAllOrders = async (req, res) => {
   res.json(orders);
 };
 
+// Displays all products in the rightmost column
 exports.getAllProducts = async (req, res) => {
   if (!req.user?.Is_Admin) return res.status(403).json({ error: "Forbidden" });
 
@@ -14,6 +16,7 @@ exports.getAllProducts = async (req, res) => {
   res.json(products);
 };
 
+// Displays products when a user is clicked on in leftmost column of adminpage
 exports.getOrdersByUser = async (req, res) => {
   const uid = req.params.uid;
 
@@ -47,13 +50,14 @@ exports.getOrdersByUser = async (req, res) => {
       });
     });
 
-    res.json(Object.values(orders)); // Send as array of orders
+    res.json(Object.values(orders)); 
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Failed to fetch user's orders." });
   }
 };
 
+// Displays all users
 exports.getAllUsers = async (req, res) => {
   try {
     const [users] = await conn.promise().query(
@@ -65,7 +69,7 @@ exports.getAllUsers = async (req, res) => {
     res.status(500).json({ error: "Failed to fetch users" });
   }
 }
-
+// Should add so stock is removed/readded if status is changed
 exports.updateOrderStatus = async (req, res) => {
   const { oid } = req.params;
   const { status } = req.body;
@@ -92,6 +96,7 @@ exports.updateOrderStatus = async (req, res) => {
   }
 };
 
+// Add new product to site
 exports.addProduct = async (req, res) => {
   const {Name, Price, Description, Cover_Image, Stock, CID} = req.body;
 

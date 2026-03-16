@@ -8,7 +8,7 @@ function Checkout({ uid, syncCart }) {
   useEffect(() => {
     fetchCart();
   }, [uid]);
-
+  // Fetch the cart that belongs to the user.
   async function fetchCart() {
     try {
       const res = await api.get(`/cart/${uid}`);
@@ -20,7 +20,7 @@ function Checkout({ uid, syncCart }) {
     }
   }
 
-  // --- Update quantity of a product in the cart ---
+  // Update quantity of a product in the cart
   async function updateQuantity(pid, newQuantity) {
     if (newQuantity < 1) newQuantity = 1;
     setCartProducts(prev =>
@@ -34,7 +34,7 @@ function Checkout({ uid, syncCart }) {
     }
   }
 
-  // --- Checkout / place order ---
+  // Checkout / place order 
   async function handleOrder() {
     try {
       await api.post("/cart/checkout", { uid });

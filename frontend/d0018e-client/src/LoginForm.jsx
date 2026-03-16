@@ -37,7 +37,7 @@ function LoginForm({ setUser }) {
 
   return (
     <div className="loginregistration">
-      <h2>Login</h2>
+      <h2>Logga in</h2>
 
       <form onSubmit={handleLogin}>
         <input
@@ -54,7 +54,7 @@ function LoginForm({ setUser }) {
           onChange={e => setPassword(e.target.value)}
           required
         />
-        <button type="submit">Login</button>
+        <button type="submit">Logga in</button>
       </form>
 
       {message && (

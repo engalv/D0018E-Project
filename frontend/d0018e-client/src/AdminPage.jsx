@@ -3,6 +3,8 @@ import api from "./api";
 import { useNavigate } from "react-router-dom";
 import "./AdminPage.css";
 
+
+// This is the admin page, only admins can access 
 function AdminPage({ user }) {
   const [products, setProducts] = useState([]);
   const [users, setUsers] = useState([]);
@@ -32,7 +34,7 @@ function AdminPage({ user }) {
       .catch(err => console.error(err));
   }, [user]);
 
-  // Fetch orders for selected user
+  // Fetch orders for clicked on user
   const handleUserClick = async (uid) => {
     setSelectedUser(uid);
     setSelectedUserOrders([]); // reset while loading
@@ -60,7 +62,7 @@ function AdminPage({ user }) {
 
   const handleAddProduct = async (e) => {
     e.preventDefault();
-    if (!newProduct.Name || !newProduct.Price) return alert("Name and Price are required");
+    if (!newProduct.Name || !newProduct.Price || !newProduct.Cover_Image || !newProduct.Stock || !newProduct.Description || !newProduct.CID) return alert("");
 
     try {
       const res = await api.post("/admin/product", {
@@ -80,7 +82,7 @@ function AdminPage({ user }) {
     }
   };
 
-  if (!user?.Is_Admin) return <p>Access denied</p>;
+  if (!user?.Is_Admin) return <p>Åtkomst nekad.</p>;
 
   return (
     <div className="admin-container">
@@ -102,7 +104,7 @@ function AdminPage({ user }) {
 
       {/*Orders*/}
       <div className="order-column">
-        <h3>Orders</h3>
+        <h3>Beställningar</h3>
         {selectedUser ? (
           selectedUserOrders.length > 0 ? (
             <ul className="order-list">
@@ -111,8 +113,8 @@ function AdminPage({ user }) {
                 return (
                   <li key={order.OID} className="order-item">
                     <div className="order-header">
-                      <strong>Order #{order.OID}</strong> &nbsp;|&nbsp;
-                      <span>Created: {order.Creation_Time ? new Date(order.Creation_Time).toLocaleString() : "Unknown"}</span> &nbsp;|&nbsp;
+                      <strong>Beställning #{order.OID}</strong> &nbsp;|&nbsp;
+                      <span>Skapades: {order.Creation_Time ? new Date(order.Creation_Time).toLocaleString() : "Unknown"}</span> &nbsp;|&nbsp;
                       <span>Status: </span>
                       <select
                         value={order.Status}
@@ -139,10 +141,10 @@ function AdminPage({ user }) {
               })}
             </ul>
           ) : (
-            <p>No orders found for this user.</p>
+            <p>Inga beställningar hittade.</p>
           )
         ) : (
-          <p>Select a user to see orders</p>
+          <p>Välj en användare för att se deras beställningar</p>
         )}
       </div>
 
